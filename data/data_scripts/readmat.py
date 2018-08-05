@@ -10,14 +10,12 @@ import math
 from matplotlib.pyplot import imshow
 import cdflib
 
-body_part = 32
-width = 1002
-height = 1000
+body_part = 14
 sigma = 8.0
 
+lsp_img_source_path = "D:/dissertation/data/lsp_dataset/images/"
 
-target = np.zeros((width, height), dtype=np.float32)
-def put_heatmap(heatmap, plane_idx, center, sigma):
+def put_heatmap(heatmap, plane_idx, center):
     print(plane_idx, center, sigma)
     center_x, center_y = center
     _, height, width = heatmap.shape[:3]
@@ -40,7 +38,7 @@ def put_heatmap(heatmap, plane_idx, center, sigma):
             heatmap[plane_idx][y][x] = max(heatmap[plane_idx][y][x], math.exp(-exp))
             heatmap[plane_idx][y][x] = min(heatmap[plane_idx][y][x], 1.0)
 
-def get_heatmap(target_size, joint_list):
+def get_heatmap(target_size, joint_list, height, width):
         heatmap = np.zeros((body_part+1, height, width), dtype=np.float32)
 
         print(np.shape(heatmap))
@@ -48,7 +46,7 @@ def get_heatmap(target_size, joint_list):
         count = 0
         point = []
         for i in range(body_part):
-          put_heatmap(heatmap, i, (joint_list[0][i], joint_list[1][i]), sigma)
+          put_heatmap(heatmap, i, (joint_list[0][i], joint_list[1][i]))
 
         heatmap = heatmap.transpose((1, 2, 0))
 
@@ -56,8 +54,9 @@ def get_heatmap(target_size, joint_list):
         heatmap[:, :, -1] = np.clip(1 - np.amax(heatmap, axis=2), 0.0, 1.0)
 
         heatmap = heatmap.transpose((2, 0, 1))
-        #if target_size:
-            #heatmap = cv2.resize(heatmap, target_size)
+        if target_size:
+            for i in range(body_part+1):
+              heatmap[i] = cv2.resize(heatmap[i], target_size, interpolation=cv2.INTER_LINEAR)
 
         return heatmap.astype(np.float32)
 
@@ -77,42 +76,73 @@ def re_orgnize(samples):
 
     return result
 
+def get_picture_info(picture_ids):
+  img_path = lsp_img_source_path+"im{frames}.jpg"
+  img_path = img_path.format(frames=str(picture_ids).zfill(4))
 
+  img = cv2.imread(img_path)
+  height, width, _ = img.shape
+  return height, width
+
+img = cv2.imread("D:/dissertation/data/lsp_dataset/images/im0002.jpg")
+
+def pre_processing_lsp(file_name, picture_ids, target_size, debug_flag = False):
+  annot = scipy.io.loadmat(file_name)
+  joints = annot['joints']
+  
+  for picid in picture_ids:
+
+    height, width = get_picture_info(picid)
+    sample = joints[:, :, picid-1]
+    heat = get_heatmap(target_size, sample, height, width)
+
+    print(np.shape(heat))
+
+    if debug_flag == True:
+      plt.figure()
+      for i in range(body_part+1):
+          plt.subplot(4,4,i+1)
+          imshow(heat[i]/255.0)
+      plt.show()
+
+    #save heat
+      
 if __name__ == '__main__':
+  
+  pre_processing_lsp('D:/dissertation/data/lsp_dataset/joints.mat', [1,2], (256, 256), debug_flag = True)
+    # data = scipy.io.loadmat('D:/dissertation/data/human3.6/S1/MyPoseFeatures/processed_2D/Directions 1.54138969.mat')
+    # annot = data['data']
 
-    cdf_file = cdflib.CDF('D:/dissertation/data/human3.6/S1/MyPoseFeatures/D2_Positions/Discussion 1.54138969.cdf')
-    data = cdf_file.varget("Pose")
+    # #cdf_file 
+    # print(np.shape(data))
 
-    #cdf_file 
-    print(np.shape(data))
+    # #img = cv2.imread("D:/dissertation/data/lsp_dataset/images/im0002.jpg")
 
-    #img = cv2.imread("D:/dissertation/data/lsp_dataset/images/im0002.jpg")
+    # #height, width, _ = img.shape
 
-    #height, width, _ = img.shape
+    # #print(img.shape)
 
-    #print(img.shape)
+    # #annot = scipy.io.loadmat('D:/dissertation/data/lsp_dataset/joints.mat')
 
-    #annot = scipy.io.loadmat('D:/dissertation/data/lsp_dataset/joints.mat')
+    # #joints = annot['joints']
 
-    #joints = annot['joints']
+    # #sample = joints[:, :, 1]
 
-    #sample = joints[:, :, 1]
+    # #print(np.shape(sample[0]))
 
-    #print(np.shape(sample[0]))
+    # samples = annot[0]
+    # samples = re_orgnize(samples)
 
-    samples = data[0]
-    sample = samples[155, :]
-    sample = re_orgnize(sample)
+    # print(samples)
+    # heat = get_heatmap(np.shape(target), samples)
 
-    print(sample)
-    heat = get_heatmap(np.shape(target), sample)
+    # plt.figure()
+    # for i in range(body_part+1):
+    #     plt.subplot(5,7,i+1)
+    #     plt.title(H36M_NAMES[i])
+    #     imshow(heat[i]/255.0)
 
-    plt.figure()
-    for i in range(body_part+1):
-        plt.subplot(5,7,i+1)
-        imshow(heat[i]/255.0)
-
-    plt.show()
+    # plt.show()
 
     #imgpts, __ = cv2.projectPoints(axis, rvec, tvec, rgb_mtx, rgb_dist)
 
