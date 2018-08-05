@@ -11,8 +11,6 @@ from sklearn.metrics import log_loss
 
 from scale_layer import Scale
 
-from load_cifar10 import load_cifar10_data
-
 import sys
 sys.setrecursionlimit(3000)
 
