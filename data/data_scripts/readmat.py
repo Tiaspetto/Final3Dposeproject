@@ -14,6 +14,7 @@ body_part = 14
 sigma = 8.0
 
 lsp_img_source_path = "D:/dissertation/data/lsp_dataset/images/"
+heatmap_path = "D:/dissertation/data/lsp_dataset/heat/"
 
 def put_heatmap(heatmap, plane_idx, center):
     print(plane_idx, center, sigma)
@@ -39,7 +40,7 @@ def put_heatmap(heatmap, plane_idx, center):
             heatmap[plane_idx][y][x] = min(heatmap[plane_idx][y][x], 1.0)
 
 def get_heatmap(target_size, joint_list, height, width):
-        heatmap = np.zeros((body_part+1, height, width), dtype=np.float32)
+        heatmap = np.zeros((body_part, height, width), dtype=np.float32)
 
         print(np.shape(heatmap))
 
@@ -51,14 +52,17 @@ def get_heatmap(target_size, joint_list, height, width):
         heatmap = heatmap.transpose((1, 2, 0))
 
         # background
-        heatmap[:, :, -1] = np.clip(1 - np.amax(heatmap, axis=2), 0.0, 1.0)
+        #heatmap[:, :, -1] = np.clip(1 - np.amax(heatmap, axis=2), 0.0, 1.0)
 
         heatmap = heatmap.transpose((2, 0, 1))
-        if target_size:
-            for i in range(body_part+1):
-              heatmap[i] = cv2.resize(heatmap[i], target_size, interpolation=cv2.INTER_LINEAR)
 
-        return heatmap.astype(np.float32)
+        result = []
+        if target_size:
+            for i in range(body_part):
+              result.append(cv2.resize(heatmap[i], target_size, interpolation=cv2.INTER_LINEAR))
+        
+        result = np.asarray(result)
+        return result.astype(np.float32)
 
 def re_orgnize(samples):
     x = []
@@ -76,15 +80,15 @@ def re_orgnize(samples):
 
     return result
 
-def get_picture_info(picture_ids):
+def get_picture_info(picid):
   img_path = lsp_img_source_path+"im{frames}.jpg"
-  img_path = img_path.format(frames=str(picture_ids).zfill(4))
+  img_path = img_path.format(frames=str(picid).zfill(4))
 
   img = cv2.imread(img_path)
   height, width, _ = img.shape
   return height, width
 
-img = cv2.imread("D:/dissertation/data/lsp_dataset/images/im0002.jpg")
+#img = cv2.imread("D:/dissertation/data/lsp_dataset/images/im0002.jpg")
 
 def pre_processing_lsp(file_name, picture_ids, target_size, debug_flag = False):
   annot = scipy.io.loadmat(file_name)
@@ -100,16 +104,32 @@ def pre_processing_lsp(file_name, picture_ids, target_size, debug_flag = False):
 
     if debug_flag == True:
       plt.figure()
-      for i in range(body_part+1):
+      for i in range(body_part):
           plt.subplot(4,4,i+1)
           imshow(heat[i]/255.0)
       plt.show()
 
-    #save heat
+    heat_path = heatmap_path+"im{frames}.mat"
+    heat_path = heat_path.format(frames=str(picid).zfill(4))
+    scipy.io.savemat(heat_path, {'heat':heat})
+  
+def read_heat_info(picid):
+  heat_path = heatmap_path+"im{frames}.mat"
+  heat_path = heat_path.format(frames=str(picid).zfill(4))
+  data = scipy.io.loadmat(heat_path)
+  heat = data['heat']
+  plt.figure()
+  for i in range(body_part):
+    plt.subplot(4,4,i+1)
+    imshow(heat[i]/255.0)
+  plt.show()
+    
       
 if __name__ == '__main__':
   
-  pre_processing_lsp('D:/dissertation/data/lsp_dataset/joints.mat', [1,2], (256, 256), debug_flag = True)
+  read_heat_info(1645)
+  read_heat_info(1874)
+  #pre_processing_lsp('D:/dissertation/data/lsp_dataset/joints.mat', range(1, 2001), (256, 256), debug_flag = False)
     # data = scipy.io.loadmat('D:/dissertation/data/human3.6/S1/MyPoseFeatures/processed_2D/Directions 1.54138969.mat')
     # annot = data['data']
 
