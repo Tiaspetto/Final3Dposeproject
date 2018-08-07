@@ -1,6 +1,6 @@
 import numpy as np
 from keras import layers
-from keras.layers import Input, Add, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D, AveragePooling2D, MaxPooling2D, GlobalMaxPooling2D, Deconvolution2D
+from keras.layers import Input, Add, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D, AveragePooling2D, MaxPooling2D, GlobalMaxPooling2D, Conv2DTranspose, UpSampling2D
 from keras.models import Model, load_model
 from keras.preprocessing import image
 from keras.utils import layer_utils
@@ -14,28 +14,7 @@ from keras.initializers import glorot_uniform
 import scipy.misc
 from matplotlib.pyplot import imshow
 
-from data.data_scripts.readmat import *
 import keras.backend as K
-K.set_image_data_format('channels_last')
-K.set_learning_phase(1)
-
-
-class MY_Generator(Sequence):
-
-    def __init__(self, image_filenames, labels, batch_size):
-        self.image_filenames, self.labels = image_filenames, labels
-        self.batch_size = batch_size
-
-    def __len__(self):
-        return np.ceil(len(self.image_filenames) / float(self.batch_size))
-
-    def __getitem__(self, idx):
-        batch_x = self.image_filenames[idx * self.batch_size:(idx + 1) * self.batch_size]
-        batch_y = self.labels[idx * self.batch_size:(idx + 1) * self.batch_size]
-
-        return np.array([
-            resize(imread(file_name), (200, 200))
-               for file_name in batch_x]), np.array(batch_y)
 
 # GRADED FUNCTION: identity_block
 
@@ -175,7 +154,7 @@ def convolutional_block(X, f, filters, stage, block, s = 2):
 
 # GRADED FUNCTION: ResNet50
 
-def ResNet50(input_shape = (256, 256, 3), classes = 6):
+def ResNet50(input_shape = (224, 224, 3)):
     """
     Implementation of the popular ResNet50 the following architecture:
     CONV2D -> BATCHNORM -> RELU -> MAXPOOL -> CONVBLOCK -> IDBLOCK*2 -> CONVBLOCK -> IDBLOCK*3
@@ -223,9 +202,10 @@ def ResNet50(input_shape = (256, 256, 3), classes = 6):
 
     # Stage 5
     X = convolutional_block(X, f=3, filters = [512, 512, 1024], stage = 5, block='a', s = 1)
-    X = non_short_cut_identity_block(X, 1, [14], stage=5, block='b')
+    X = non_short_cut_identity_block(X, 1, [32], stage=5, block='b')
     
-    X = Deconvolution2D(14, 4, 4, output_shape=(None, 224, 224, 14),subsample=(2, 2),border_mode='same',input_shape=(224, 224, 14),bias=False)(X)
+    X = UpSampling2D(size=(8,8))(X)
+    X = Conv2DTranspose(14, (4, 4), strides=(2, 2), padding='same', use_bias=False)(X)
     # Create model
     model = Model(inputs = X_input, outputs = X, name='ResNet50')
 
@@ -241,7 +221,7 @@ def get_train_data():
 
 
 if __name__ == "__main__":
-    model = ResNet50(input_shape = (128, 128, 3), classes = 6)
+    model = ResNet50(input_shape = (224, 224, 3))
     model.compile(optimizer = 'adam', loss = 'mean_squared_error', metrics=['accuracy'])
     X_train , Y_train = get_train_data()
     model.fit(X_train, Y_train, epochs = 2, batch_size = 32)

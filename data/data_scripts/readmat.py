@@ -118,6 +118,7 @@ def read_heat_info(picid):
   heat_path = heat_path.format(frames=str(picid).zfill(4))
   data = scipy.io.loadmat(heat_path)
   heat = data['heat']
+  heat = heat.transpose((1, 2, 0))
   return heat
   # plt.figure()
   # for i in range(body_part):
@@ -136,13 +137,15 @@ def read_image(picid):
   # plt.figure()
   # imshow(img)
   # plt.show()
+
+  #print(np.shape(img))
   return img
 
     
       
-#if __name__ == '__main__':
+if __name__ == '__main__':
   
-  #read_image(1260)
+  read_image(1260)
   #read_heat_info(1645)
   #read_heat_info(1874)
   #pre_processing_lsp('D:/dissertation/data/lsp_dataset/joints.mat', range(1, 2001), (224, 224), debug_flag = False)
