@@ -9,12 +9,12 @@ from mpl_toolkits.mplot3d import Axes3D
 import math
 from matplotlib.pyplot import imshow
 import cdflib
-
+import os
 body_part = 14
 sigma = 8.0
 
-lsp_img_source_path = "D:/dissertation/data/lsp_dataset/images/"
-heatmap_path = "D:/dissertation/data/lsp_dataset/heat/"
+lsp_img_source_path = "/data/lsp_dataset/images/"
+heatmap_path = "/data/lsp_dataset/heat/"
 
 def put_heatmap(heatmap, plane_idx, center):
     print(plane_idx, center, sigma)
@@ -81,7 +81,8 @@ def re_orgnize(samples):
     return result
 
 def get_picture_info(picid):
-  img_path = lsp_img_source_path+"im{frames}.jpg"
+  ima_path = os.path.abspath('.') + lsp_img_source_path 
+  img_path = ima_path+"im{frames}.jpg"
   img_path = img_path.format(frames=str(picid).zfill(4))
 
   img = cv2.imread(img_path)
@@ -114,7 +115,8 @@ def pre_processing_lsp(file_name, picture_ids, target_size, debug_flag = False):
     scipy.io.savemat(heat_path, {'heat':heat})
   
 def read_heat_info(picid):
-  heat_path = heatmap_path+"im{frames}.mat"
+  heat_path = os.path.abspath('.') + heatmap_path
+  heat_path = heat_path+"im{frames}.mat"
   heat_path = heat_path.format(frames=str(picid).zfill(4))
   data = scipy.io.loadmat(heat_path)
   heat = data['heat']
@@ -127,7 +129,8 @@ def read_heat_info(picid):
   # plt.show()
 
 def read_image(picid):
-  img_path = lsp_img_source_path+"im{frames}.jpg"
+  ima_path = os.path.abspath('.') + lsp_img_source_path 
+  img_path = ima_path+"im{frames}.jpg"
   img_path = img_path.format(frames=str(picid).zfill(4))
 
   img = cv2.imread(img_path)
@@ -141,11 +144,13 @@ def read_image(picid):
   #print(np.shape(img))
   return img
 
-    
+
+def print_path():
+  print(os.path.abspath('.')+lsp_img_source_path ,os.path.abspath('.')+heatmap_path)
       
 if __name__ == '__main__':
   
-  read_image(1260)
+  print_path()
   #read_heat_info(1645)
   #read_heat_info(1874)
   #pre_processing_lsp('D:/dissertation/data/lsp_dataset/joints.mat', range(1, 2001), (224, 224), debug_flag = False)

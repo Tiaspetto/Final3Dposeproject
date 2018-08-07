@@ -211,20 +211,8 @@ def ResNet50(input_shape = (224, 224, 3)):
 
     return model
 
-def get_train_data():
-    X_train = []
-    Y_train = []
-    for i in range(1, 2001):
-        X_train.append(read_image(i))
-        Y_train.append(read_heat_info(i))
-    return np.asarray(X_train), np.asarray(Y_train)
-
 
 if __name__ == "__main__":
-    model = ResNet50(input_shape = (224, 224, 3))
-    model.compile(optimizer = 'adam', loss = 'mean_squared_error', metrics=['accuracy'])
-    X_train , Y_train = get_train_data()
-    model.fit(X_train, Y_train, epochs = 2, batch_size = 32)
-
+    printpath()
 
 
