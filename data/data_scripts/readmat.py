@@ -118,18 +118,34 @@ def read_heat_info(picid):
   heat_path = heat_path.format(frames=str(picid).zfill(4))
   data = scipy.io.loadmat(heat_path)
   heat = data['heat']
-  plt.figure()
-  for i in range(body_part):
-    plt.subplot(4,4,i+1)
-    imshow(heat[i]/255.0)
-  plt.show()
+  return heat
+  # plt.figure()
+  # for i in range(body_part):
+  #   plt.subplot(4,4,i+1)
+  #   imshow(heat[i]/255.0)
+  # plt.show()
+
+def read_image(picid):
+  img_path = lsp_img_source_path+"im{frames}.jpg"
+  img_path = img_path.format(frames=str(picid).zfill(4))
+
+  img = cv2.imread(img_path)
+
+  img = cv2.resize(img, (224,224), interpolation=cv2.INTER_LINEAR)
+
+  # plt.figure()
+  # imshow(img)
+  # plt.show()
+  return img
+
     
       
-if __name__ == '__main__':
+#if __name__ == '__main__':
   
-  read_heat_info(1645)
-  read_heat_info(1874)
-  #pre_processing_lsp('D:/dissertation/data/lsp_dataset/joints.mat', range(1, 2001), (256, 256), debug_flag = False)
+  #read_image(1260)
+  #read_heat_info(1645)
+  #read_heat_info(1874)
+  #pre_processing_lsp('D:/dissertation/data/lsp_dataset/joints.mat', range(1, 2001), (224, 224), debug_flag = False)
     # data = scipy.io.loadmat('D:/dissertation/data/human3.6/S1/MyPoseFeatures/processed_2D/Directions 1.54138969.mat')
     # annot = data['data']
 

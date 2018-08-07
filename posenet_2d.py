@@ -1,12 +1,11 @@
 import numpy as np
 from keras import layers
-from keras.layers import Input, Add, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D, AveragePooling2D, MaxPooling2D, GlobalMaxPooling2D
+from keras.layers import Input, Add, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D, AveragePooling2D, MaxPooling2D, GlobalMaxPooling2D, Deconvolution2D
 from keras.models import Model, load_model
 from keras.preprocessing import image
 from keras.utils import layer_utils
 from keras.utils.data_utils import get_file
 from keras.applications.imagenet_utils import preprocess_input
-import pydot
 from IPython.display import SVG
 from keras.utils.vis_utils import model_to_dot
 from keras.utils import plot_model
@@ -14,11 +13,29 @@ from resnets_utils import *
 from keras.initializers import glorot_uniform
 import scipy.misc
 from matplotlib.pyplot import imshow
-%matplotlib inline
 
+from data.data_scripts.readmat import *
 import keras.backend as K
 K.set_image_data_format('channels_last')
 K.set_learning_phase(1)
+
+
+class MY_Generator(Sequence):
+
+    def __init__(self, image_filenames, labels, batch_size):
+        self.image_filenames, self.labels = image_filenames, labels
+        self.batch_size = batch_size
+
+    def __len__(self):
+        return np.ceil(len(self.image_filenames) / float(self.batch_size))
+
+    def __getitem__(self, idx):
+        batch_x = self.image_filenames[idx * self.batch_size:(idx + 1) * self.batch_size]
+        batch_y = self.labels[idx * self.batch_size:(idx + 1) * self.batch_size]
+
+        return np.array([
+            resize(imread(file_name), (200, 200))
+               for file_name in batch_x]), np.array(batch_y)
 
 # GRADED FUNCTION: identity_block
 
@@ -65,6 +82,37 @@ def identity_block(X, f, filters, stage, block):
     # Final step: Add shortcut value to main path, and pass it through a RELU activation 
     X = Add()([X_shortcut, X])
     X = Activation('relu')(X)
+    
+    
+    return X
+
+def non_short_cut_identity_block(X, f, filters, stage, block):
+    """
+    Implementation of the identity block as defined in Figure 3
+    
+    Arguments:
+    X -- input tensor of shape (m, n_H_prev, n_W_prev, n_C_prev)
+    f -- integer, specifying the shape of the middle CONV's window for the main path
+    filters -- python list of integers, defining the number of filters in the CONV layers of the main path
+    stage -- integer, used to name the layers, depending on their position in the network
+    block -- string/character, used to name the layers, depending on their position in the network
+    
+    Returns:
+    X -- output of the identity block, tensor of shape (n_H, n_W, n_C)
+    """
+    
+    # defining name basis
+    conv_name_base = 'res' + str(stage) + block + '_branch'
+    bn_name_base = 'bn' + str(stage) + block + '_branch'
+    
+    # Retrieve Filters
+    F1 = filters[0]    
+    
+    # First component of main path
+    X = Conv2D(filters = F1, kernel_size = (1, 1), strides = (1,1), padding = 'valid', name = conv_name_base + '2a', kernel_initializer = glorot_uniform(seed=0))(X)
+    X = BatchNormalization(axis = 3, name = bn_name_base + '2a')(X)
+    X = Activation('relu')(X)
+    
     
     
     return X
@@ -127,7 +175,7 @@ def convolutional_block(X, f, filters, stage, block, s = 2):
 
 # GRADED FUNCTION: ResNet50
 
-def ResNet50(input_shape = (64, 64, 3), classes = 6):
+def ResNet50(input_shape = (256, 256, 3), classes = 6):
     """
     Implementation of the popular ResNet50 the following architecture:
     CONV2D -> BATCHNORM -> RELU -> MAXPOOL -> CONVBLOCK -> IDBLOCK*2 -> CONVBLOCK -> IDBLOCK*3
@@ -174,20 +222,29 @@ def ResNet50(input_shape = (64, 64, 3), classes = 6):
     X = identity_block(X, 3, [256, 256, 1024], stage=4, block='f')
 
     # Stage 5
-    X = convolutional_block(X, f=3, filters = [512, 512, 2048], stage = 5, block='a', s = 2)
-    X = identity_block(X, 3, [512, 512, 2048], stage=5, block='b')
-    X = identity_block(X, 3, [512, 512, 2048], stage=5, block='c')
+    X = convolutional_block(X, f=3, filters = [512, 512, 1024], stage = 5, block='a', s = 1)
+    X = non_short_cut_identity_block(X, 1, [14], stage=5, block='b')
     
+    X = Deconvolution2D(14, 4, 4, output_shape=(None, 224, 224, 14),subsample=(2, 2),border_mode='same',input_shape=(224, 224, 14),bias=False)(X)
     # Create model
     model = Model(inputs = X_input, outputs = X, name='ResNet50')
 
     return model
 
+def get_train_data():
+    X_train = []
+    Y_train = []
+    for i in range(1, 2001):
+        X_train.append(read_image(i))
+        Y_train.append(read_heat_info(i))
+    return np.asarray(X_train), np.asarray(Y_train)
+
+
 if __name__ == "__main__":
     model = ResNet50(input_shape = (128, 128, 3), classes = 6)
     model.compile(optimizer = 'adam', loss = 'mean_squared_error', metrics=['accuracy'])
-    X_train = []
-    Y_train = []
+    X_train , Y_train = get_train_data()
     model.fit(X_train, Y_train, epochs = 2, batch_size = 32)
+
 
 
