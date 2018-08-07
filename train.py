@@ -32,7 +32,6 @@ def get_train_batch(index_array, batch_size):
             #print(np.shape(x), np.shape(y))
             yield (x,y)
 
-
 def shuffle(index_array):
     for i in range(0, len(index_array)-1):
         index = random.randint(i, len(index_array)-1)
