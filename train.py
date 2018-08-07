@@ -42,11 +42,14 @@ def shuffle(index_array):
 
 if __name__ == '__main__':
 
-    index_array = range(1, 2001)
+    index_array = range(1, 1901)
 
     index_array = list(index_array)
 
     index_array = shuffle(index_array)
+
+    validation_array = list(range(1901,2001))
+
 
     ckpt_path = 'log/weights-{val_loss:.4f}.hdf5'
     ckpt = tf.keras.callbacks.ModelCheckpoint(ckpt_path,
@@ -62,4 +65,6 @@ if __name__ == '__main__':
                                  steps_per_epoch=1351,
                                  callbacks=[ckpt],
                                  epochs=300, verbose=1,
+                                 validation_data=get_train_batch(validation_array, 8),
+                                 validation_steps=52,
                                  workers=1)
