@@ -223,9 +223,9 @@ def PoseNet_50(input_shape = (224, 224, 3)):
     X = non_short_cut_identity_block(X, 1, [128], stage = 5, block = 'b')
 
     X = UpSampling2D(size = (2,2))(X)
-    X = Conv2DTranspose(64, (4, 4), strides=(2, 2), padding = 'same', use_bias = False)(X)
+    X = Conv2DTranspose(64, (4, 4), strides=(2, 2), padding = 'same', use_bias = False, kernel_regularizer = regularizers.l2(0.01))(X)
     X = UpSampling2D(size = (2,2))(X)
-    X = Conv2DTranspose(14, (4, 4), strides=(2, 2), padding = 'same', use_bias = False)(X)
+    X = Conv2DTranspose(14, (4, 4), strides=(2, 2), padding = 'same', use_bias = False, kernel_regularizer = regularizers.l2(0.01))(X)
     
     model = Model(inputs = X_input, outputs = X, name = "PoseNet_50")
 
