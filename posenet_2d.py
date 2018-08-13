@@ -13,6 +13,7 @@ from keras.applications.imagenet_utils import preprocess_input
 from keras import regularizers
 from matplotlib.pyplot import imshow
 from resnets_utils import *
+from keras.layers.advanced_activations import LeakyReLU
 
 import scipy.misc
 import keras.backend as K
@@ -47,13 +48,13 @@ def identity_block(X, f, filters, stage, block):
     # First component of main path
     X = Conv2D(filters = F1, kernel_size = (1, 1), strides = (1,1), padding = 'valid', name = conv_name_base + '2a', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = BatchNormalization(axis = 3, name = bn_name_base + '2a')(X)
-    X = Activation('relu')(X)
+    X = LeakyReLU(alpha=.001)(X)
     
     
     # Second component of main path 
     X = Conv2D(filters = F2, kernel_size = (f, f), strides = (1, 1), padding = 'same', name =  conv_name_base + '2b', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = BatchNormalization(axis = 3, name = bn_name_base + '2b')(X)
-    X = Activation('relu')(X)
+    X = LeakyReLU(alpha=.001)(X)
 
     # Third component of main path
     X = Conv2D(filters = F3, kernel_size = (1, 1), strides = (1, 1), padding = 'valid', name =  conv_name_base + '2c', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
@@ -61,7 +62,7 @@ def identity_block(X, f, filters, stage, block):
 
     # Final step: Add shortcut value to main path, and pass it through a RELU activation 
     X = Add()([X_shortcut, X])
-    X = Activation('relu')(X)
+    X = LeakyReLU(alpha=.001)(X)
     
     
     return X
@@ -91,7 +92,7 @@ def non_short_cut_identity_block(X, f, filters, stage, block):
     # First component of main path
     X = Conv2D(filters = F1, kernel_size = (1, 1), strides = (1,1), padding = 'valid', name = conv_name_base + '2a', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = BatchNormalization(axis = 3, name = bn_name_base + '2a')(X)
-    X = Activation('relu')(X)
+    X = LeakyReLU(alpha=.001)(X)
     
     
     
@@ -130,13 +131,13 @@ def convolutional_block(X, f, filters, stage, block, s = 2):
     # First component of main path 
     X = Conv2D(F1, kernel_size = (1, 1), strides = (s,s), padding = 'valid', name = conv_name_base + '2a', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = BatchNormalization(axis = 3, name = bn_name_base + '2a')(X)
-    X = Activation('relu')(X)
+    X = LeakyReLU(alpha=.001)(X)
     
 
     # Second component of main path
     X = Conv2D(F2, kernel_size = (f, f), strides = (1,1), padding = 'same', name = conv_name_base + '2b', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = BatchNormalization(axis = 3, name = bn_name_base + '2b')(X)
-    X = Activation('relu')(X)
+    X = LeakyReLU(alpha=.001)(X)
 
     # Third component of main path
     X = Conv2D(F3, kernel_size = (1, 1), strides = (1,1), padding = 'valid', name = conv_name_base + '2c', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
@@ -148,7 +149,7 @@ def convolutional_block(X, f, filters, stage, block, s = 2):
 
     # Final step: Add shortcut value to main path, and pass it through a RELU activation 
     X = Add()([X_shortcut, X])
-    X = Activation('relu')(X)
+    X = LeakyReLU(alpha=.001)(X)
     
     
     return X
