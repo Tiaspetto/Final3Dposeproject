@@ -1,8 +1,11 @@
 from data.data_scripts.readmat import *
 from posenet_2d import *
-import random
 from keras.models import Model, load_model
+from keras import backend as K
+from keras import optimizers
+import random
 import tensorflow as tf
+
 
 def get_img_batch(batch_array):
     imgs = []
@@ -39,6 +42,9 @@ def shuffle(index_array):
 
     return index_array
 
+def euc_dist_keras(y_true, y_pred):
+	return K.sqrt(K.sum(K.square(y_true - y_pred), axis = -1, keepdims = True))
+
 
 if __name__ == '__main__':
 
@@ -58,13 +64,14 @@ if __name__ == '__main__':
                                               save_best_only=True,
                                               mode='min')
 
-    model = ResNet50(input_shape=(224, 224, 3))
-    model.compile(optimizer='adam', loss='mean_squared_error',
-                  metrics=['accuracy'])
+    model = PoseNet_50(input_shape=(224, 224, 3))
+    adadelta = optimizers.Adadelta(lr = 0.05, rho = 0.9, decay = 0.005)
+    model.compile(optimizer = adadelta, loss = euc_dist_keras,
+                  metrics=['mae'])
     result = model.fit_generator(generator=get_train_batch(index_array, 8),
-                                 steps_per_epoch=1351,
+                                 steps_per_epoch=238,
                                  callbacks=[ckpt],
-                                 epochs=300, verbose=1,
+                                 epochs=60000, verbose=1,
                                  validation_data=get_train_batch(validation_array, 8),
                                  validation_steps=52,
                                  workers=1)
