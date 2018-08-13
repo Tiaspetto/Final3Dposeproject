@@ -65,7 +65,7 @@ if __name__ == '__main__':
                                               mode='min')
 
     model = PoseNet_50(input_shape=(224, 224, 3))
-    adadelta = optimizers.Adadelta(lr = 0.05, rho = 0.9, decay = 0.005)
+    adadelta = optimizers.Adadelta(lr = float('3.3e-5'), rho = 0.9, decay = 0.005)
     model.compile(optimizer = adadelta, loss = euc_dist_keras,
                   metrics=['mae'])
     result = model.fit_generator(generator=get_train_batch(index_array, 8),
