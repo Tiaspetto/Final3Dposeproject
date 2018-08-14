@@ -3,6 +3,7 @@ from posenet_2d import *
 from keras.models import Model, load_model
 from keras import backend as K
 from keras import optimizers
+from keras.callbacks import LearningRateScheduler
 import random
 import tensorflow as tf
 
@@ -45,6 +46,13 @@ def shuffle(index_array):
 def euc_dist_keras(y_true, y_pred):
 	return K.sqrt(K.sum(K.square(y_true - y_pred), axis = -1, keepdims = True))
 
+def step_decay(epochs):
+	initial_lrate = 0.05
+	drop = 0.005
+	epochs_drop = 20
+	lrate = initial_lrate * math.pow(drop, math.floor((1+epochs)/epochs_drop))
+	print("learning rate drop to:", lrate)
+	return lrate
 
 if __name__ == '__main__':
 
@@ -65,12 +73,13 @@ if __name__ == '__main__':
                                               mode='min')
 
     model = PoseNet_50(input_shape=(224, 224, 3))
-    adadelta = optimizers.Adadelta(lr = float('3.3e-5'), rho = 0.9, decay = 0.005)
+    adadelta = optimizers.Adadelta(lr = 0.05, rho = 0.9, decay = 0.0)
     model.compile(optimizer = adadelta, loss = euc_dist_keras,
                   metrics=['mae'])
+    lrate = LearningRateScheduler(step_decay)
     result = model.fit_generator(generator=get_train_batch(index_array, 8),
                                  steps_per_epoch=238,
-                                 callbacks=[ckpt],
+                                 callbacks=[ckpt, lrate],
                                  epochs=60000, verbose=1,
                                  validation_data=get_train_batch(validation_array, 8),
                                  validation_steps=52,
