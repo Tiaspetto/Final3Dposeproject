@@ -44,18 +44,18 @@ def shuffle(index_array):
     return index_array
 
 def euc_dist_keras(y_true, y_pred):
-	return K.sqrt(K.sum(K.square(y_true - y_pred), axis = -1, keepdims = True))
+    return K.sqrt(K.sum(K.square(y_true - y_pred), axis = -1, keepdims = True))
 
 def step_decay(epochs):
-	initial_lrate = 0.05
-	drop = 0.5
-	epochs_drop = 8
-	lrate = initial_lrate * math.pow(drop, math.floor((1+epochs)/epochs_drop))
-	print("learning rate drop to:", lrate)
+    initial_lrate = 0.05
+    drop = 0.5
+    epochs_drop = 8
+    lrate = initial_lrate * math.pow(drop, math.floor((1+epochs)/epochs_drop))
+    print("learning rate drop to:", lrate)
     
     lrate = min(0.001, lrate)
-    
-	return lrate
+
+    return lrate
 
 if __name__ == '__main__':
 
