@@ -108,10 +108,10 @@ def pre_processing_lsp(file_name, picture_ids, target_size, debug_flag = False):
           plt.subplot(4,4,i+1)
           imshow(heat[i]/255.0)
       plt.show()
-
-    heat_path = heatmap_path+"im{frames}.mat"
-    heat_path = heat_path.format(frames=str(picid).zfill(4))
-    scipy.io.savemat(heat_path, {'heat':heat})
+    else:  
+      heat_path = heatmap_path+"im{frames}.mat"
+      heat_path = heat_path.format(frames=str(picid).zfill(4))
+      scipy.io.savemat(heat_path, {'heat':heat})
   
 def read_heat_info(picid):
   heat_path = os.path.abspath('.') + heatmap_path
@@ -143,16 +143,30 @@ def read_image(picid):
   #print(np.shape(img))
   return img
 
+def debug_read_heat_info(picid):
+  heat_path = os.path.abspath('..') + "/lsp_dataset/heat/"
+  heat_path = heat_path+"im{frames}.mat"
+  heat_path = heat_path.format(frames=str(picid).zfill(4))
+  print(heat_path)
+  data = scipy.io.loadmat(heat_path)
+  heat = data['heat']
+  #heat = heat.transpose((1, 2, 0))
+  plt.figure()
+  for i in range(body_part):
+    plt.subplot(4,4,i+1)
+    imshow(heat[i]/255.0)
+  plt.show()
+  return heat
 
 def print_path():
   print(os.path.abspath('.')+lsp_img_source_path ,os.path.abspath('.')+heatmap_path)
       
 if __name__ == '__main__':
   
-  print_path()
-  #read_heat_info(1645)
+  #pre_processing_lsp(file_name, picture_ids, target_size, debug_flag = False):
+  debug_read_heat_info(1)
   #read_heat_info(1874)
-  #pre_processing_lsp('D:/dissertation/data/lsp_dataset/joints.mat', range(1, 2001), (224, 224), debug_flag = False)
+  #pre_processing_lsp('D:/dissertation/data/lsp_dataset/joints.mat', [1], (224, 224), debug_flag = True)
     # data = scipy.io.loadmat('D:/dissertation/data/human3.6/S1/MyPoseFeatures/processed_2D/Directions 1.54138969.mat')
     # annot = data['data']
 
