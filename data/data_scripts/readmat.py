@@ -8,7 +8,6 @@ import os
 from mpl_toolkits.mplot3d import Axes3D
 import math
 from matplotlib.pyplot import imshow
-import cdflib
 import os
 body_part = 14
 sigma = 8.0
