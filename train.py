@@ -49,9 +49,12 @@ def euc_dist_keras(y_true, y_pred):
 def step_decay(epochs):
 	initial_lrate = 0.05
 	drop = 0.5
-	epochs_drop = 10
+	epochs_drop = 8
 	lrate = initial_lrate * math.pow(drop, math.floor((1+epochs)/epochs_drop))
 	print("learning rate drop to:", lrate)
+    
+    lrate = min(0.001, lrate)
+    
 	return lrate
 
 if __name__ == '__main__':
