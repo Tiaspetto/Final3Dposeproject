@@ -129,22 +129,22 @@ def convolutional_block(X, f, filters, stage, block, s = 2):
 
     ##### MAIN PATH #####
     # First component of main path 
-    X = Conv2D(F1, kernel_size = (1, 1), strides = (s,s), padding = 'valid', name = conv_name_base + '2a', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(F1, kernel_size = (1, 1), strides = (s,s), padding = 'valid', name = conv_name_base + '2a', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.05))(X)
     X = BatchNormalization(axis = 3, name = bn_name_base + '2a')(X)
     X = LeakyReLU(alpha=.001)(X)
     
 
     # Second component of main path
-    X = Conv2D(F2, kernel_size = (f, f), strides = (1,1), padding = 'same', name = conv_name_base + '2b', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(F2, kernel_size = (f, f), strides = (1,1), padding = 'same', name = conv_name_base + '2b', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.05))(X)
     X = BatchNormalization(axis = 3, name = bn_name_base + '2b')(X)
     X = LeakyReLU(alpha=.001)(X)
 
     # Third component of main path
-    X = Conv2D(F3, kernel_size = (1, 1), strides = (1,1), padding = 'valid', name = conv_name_base + '2c', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(F3, kernel_size = (1, 1), strides = (1,1), padding = 'valid', name = conv_name_base + '2c', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.05))(X)
     X = BatchNormalization(axis = 3, name = bn_name_base + '2c')(X)
 
     ##### SHORTCUT PATH #### 
-    X_shortcut =  Conv2D(F3, kernel_size = (1, 1), strides = (s,s), padding = 'valid', name = conv_name_base + '1', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X_shortcut)
+    X_shortcut =  Conv2D(F3, kernel_size = (1, 1), strides = (s,s), padding = 'valid', name = conv_name_base + '1', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.05))(X_shortcut)
     X_shortcut =  BatchNormalization(axis = 3, name = bn_name_base + '1')(X_shortcut)
 
     # Final step: Add shortcut value to main path, and pass it through a RELU activation 
@@ -220,12 +220,12 @@ def PoseNet_50(input_shape = (224, 224, 3)):
 
     X = base_model.get_layer('activation_40').output
     X = convolutional_block(X, f=3, filters = [512, 512, 1024], stage = 5, block='a', s = 1)
-    X = non_short_cut_identity_block(X, 1, [256], stage = 5, block = 'b')
+    X = non_short_cut_identity_block(X, 1, [64], stage = 5, block = 'b')
 
     X = UpSampling2D(size = (2,2))(X)
-    X = Conv2DTranspose(128, (4, 4), strides=(2, 2), padding = 'same', use_bias = False, kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2DTranspose(64, (4, 4), strides=(2, 2), padding = 'same', use_bias = False, kernel_regularizer = regularizers.l2(0.05))(X)
     X = UpSampling2D(size = (2,2))(X)
-    X = Conv2DTranspose(14, (4, 4), strides=(2, 2), padding = 'same', use_bias = False, kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2DTranspose(14, (4, 4), strides=(2, 2), padding = 'same', use_bias = False, kernel_regularizer = regularizers.l2(0.05))(X)
     
     model = Model(inputs = X_input, outputs = X, name = "PoseNet_50")
 
