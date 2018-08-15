@@ -90,7 +90,7 @@ def non_short_cut_identity_block(X, f, filters, stage, block):
     F1 = filters[0]    
     
     # First component of main path
-    X = Conv2D(filters = F1, kernel_size = (1, 1), strides = (1,1), padding = 'valid', name = conv_name_base + '2a', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(filters = F1, kernel_size = (1, 1), strides = (1,1), padding = 'valid', name = conv_name_base + '2a', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.05))(X)
     X = BatchNormalization(axis = 3, name = bn_name_base + '2a')(X)
     X = LeakyReLU(alpha=.001)(X)
     
