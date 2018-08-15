@@ -52,7 +52,7 @@ def step_decay(epochs):
     epochs_drop = 8
     lrate = initial_lrate * math.pow(drop, math.floor((1+epochs)/epochs_drop))
     
-    lrate = max(0.001, lrate)
+    lrate = max(float('3.3e-5'), lrate)
     print("learning rate drop to:", lrate)
 
     return lrate
