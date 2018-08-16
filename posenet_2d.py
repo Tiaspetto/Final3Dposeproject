@@ -204,12 +204,14 @@ def __PoesNet50(input_shape = (224, 224, 3)):
 
     # Stage 5
     X = convolutional_block(X, f=3, filters = [512, 512, 1024], stage = 5, block='a', s = 1)
-    X = non_short_cut_identity_block(X, 1, [32], stage=5, block='b')
+    X = non_short_cut_identity_block(X, 1, [64], stage=5, block='b')
     
-    X = UpSampling2D(size=(8,8))(X)
-    X = Conv2DTranspose(14, (4, 4), strides=(2, 2), padding='same', use_bias=False)(X)
-    # Create model
-    model = Model(inputs = X_input, outputs = X, name='ResNet50')
+    X = UpSampling2D(size = (2,2))(X)
+    X = Conv2DTranspose(64, (4, 4), strides=(2, 2), padding = 'same', use_bias = False, kernel_regularizer = regularizers.l2(0.05))(X)
+    X = UpSampling2D(size = (2,2))(X)
+    X = Conv2DTranspose(14, (4, 4), strides=(2, 2), padding = 'same', use_bias = False, kernel_regularizer = regularizers.l2(0.05))(X)
+    
+    model = Model(inputs = X_input, outputs = X, name = "PoseNet_50")
 
     return model
 
