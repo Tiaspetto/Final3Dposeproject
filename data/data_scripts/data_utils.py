@@ -11,7 +11,7 @@ from matplotlib.pyplot import imshow
 import os
 import csv
 body_part = 14
-sigma = 8.0
+sigma = 4.0
 
 lsp_img_source_path = "/data/lsp_dataset/images/"
 heatmap_path = "/data/lsp_dataset/heat/"
@@ -120,7 +120,8 @@ def pre_processing_lsp(file_name, picture_ids, target_size, debug_flag=False):
                 imshow(heat[i]/255.0)
             plt.show()
         else:
-            heat_path = heatmap_path+"im{frames}.mat"
+            heat_path = os.path.abspath('.') + heatmap_path
+            heat_path = heat_path+"im{frames}.mat"
             heat_path = heat_path.format(frames=str(picid).zfill(4))
             scipy.io.savemat(heat_path, {'heat': heat})
 
@@ -214,4 +215,4 @@ def print_path():
 
 
 if __name__ == '__main__':
-    debug_read_heat_info(1)
+    pass

@@ -87,38 +87,35 @@ def step_decay(epochs):
 
     return lrate
 
+def train_2d():
+    index_array = range(1, 1901)
 
-if __name__ == '__main__':
+    index_array = list(index_array)
 
-    # index_array = range(1, 1901)
+    index_array = shuffle(index_array)
 
-    # index_array = list(index_array)
+    validation_array = list(range(1901,2001))
 
-    # index_array = shuffle(index_array)
+    ckpt_path = 'log/weights-{val_loss:.4f}.hdf5'
+    ckpt = tf.keras.callbacks.ModelCheckpoint(ckpt_path,
+                                              monitor='val_loss',
+                                              verbose=1,
+                                              save_best_only=True,
+                                              mode='min')
 
-    # validation_array = list(range(1901,2001))
-
-    # ckpt_path = 'log/weights-{val_loss:.4f}.hdf5'
-    # ckpt = tf.keras.callbacks.ModelCheckpoint(ckpt_path,
-    #                                           monitor='val_loss',
-    #                                           verbose=1,
-    #                                           save_best_only=True,
-    #                                           mode='min')
-
-    # model = PoseNet_50(input_shape=(224, 224, 3))
-    # adadelta = optimizers.Adadelta(lr = 0.05, rho = 0.9, decay = 0.0)
-    # model.compile(optimizer = adadelta, loss = euc_dist_keras,
-    #               metrics=['mae'])
-    # lrate = LearningRateScheduler(step_decay)
-    # result = model.fit_generator(generator=pose2d_get_train_batch(index_array, 8),
-    #                              steps_per_epoch=238,
-    #                              callbacks=[ckpt, lrate],
-    #                              epochs=60000, verbose=1,
-    #                              validation_data=pose2d_get_train_batch(validation_array, 8),
-    #                              validation_steps=52,
-    #                              workers=1)
-
-    #====train 3d pose =======#
+    model = PoseNet_50(input_shape=(224, 224, 3))
+    adadelta = optimizers.Adadelta(lr = 0.05, rho = 0.9, decay = 0.0)
+    model.compile(optimizer = adadelta, loss = euc_dist_keras,
+                  metrics=['mae'])
+    lrate = LearningRateScheduler(step_decay)
+    result = model.fit_generator(generator=pose2d_get_train_batch(index_array, 8),
+                                 steps_per_epoch=238,
+                                 callbacks=[ckpt, lrate],
+                                 epochs=60000, verbose=1,
+                                 validation_data=pose2d_get_train_batch(validation_array, 8),
+                                 validation_steps=52,
+                                 workers=1)
+def train_3d():
     train_array = list(range(1, 35833))
     train_array = shuffle(train_array)
     val_array = list(range(1, 19313))
@@ -144,3 +141,6 @@ if __name__ == '__main__':
                                  validation_data=pose3d_get_train_batch(val_array, 8, False),
                                  validation_steps=2415,
                                  workers=1)
+if __name__ == '__main__':
+    train_2d()
+    #train_3d()
