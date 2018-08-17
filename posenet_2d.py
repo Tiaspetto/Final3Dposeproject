@@ -204,7 +204,7 @@ def __PoesNet50(input_shape = (224, 224, 3)):
 
     # Stage 5
     X = convolutional_block(X, f=3, filters = [512, 512, 1024], stage = 5, block='a', s = 1)
-    X = non_short_cut_identity_block(X, 1, [64], stage=5, block='b')
+    X = non_short_cut_identity_block(X, 1, [128], stage=5, block='b')
     
     X = UpSampling2D(size = (2,2))(X)
     X = Conv2DTranspose(64, (4, 4), strides=(2, 2), padding = 'same', use_bias = False, kernel_regularizer = regularizers.l2(0.05))(X)
@@ -222,7 +222,7 @@ def PoseNet_50(input_shape = (224, 224, 3)):
 
     X = base_model.get_layer('activation_40').output
     X = convolutional_block(X, f=3, filters = [512, 512, 1024], stage = 5, block='a', s = 1)
-    X = non_short_cut_identity_block(X, 1, [64], stage = 5, block = 'b')
+    X = non_short_cut_identity_block(X, 1, [128], stage = 5, block = 'b')
 
     X = UpSampling2D(size = (2,2))(X)
     X = Conv2DTranspose(64, (4, 4), strides=(2, 2), padding = 'same', use_bias = False, kernel_regularizer = regularizers.l2(0.05))(X)

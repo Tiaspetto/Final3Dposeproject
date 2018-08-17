@@ -9,6 +9,8 @@ from keras.layers.core import Activation
 
 from keras.applications.resnet50 import ResNet50
 from keras.models import Model, load_model
+from posenet_2d import *
+
 
 import numpy as np
 
@@ -22,15 +24,17 @@ def bilinear_interpolation(w):
 
     return w_bilinear
 
-def resnet50_32s(input_shape = (224, 224, 15)):
+def resnet50_32s(input_shape = (224, 224, 15), model_input = ''):
     predict_shape = input_shape[3] - 1 
     predict_shape = predict_shape * 3
-    #Input tensor 
-    X_input = Input(input_shape)
-    base_model = ResNet50(weights = "imagenet", include_top = False, input_tensor = X_input)
+
+    base_model = PoseNet_50(input_shape)
+    
+    if model_input != '':
+        base_model.load_weights(model_input)
     
     #add predictor
-    X = base_model.get_layer('activation_49').output
+    X = base_model.get_layer('activation_44').output
     X = Convolution2D(predict_shape, 1, 1, name = 'pred_32', init = 'zero', border_mode = 'valid')(x)
     
     # add upsampler
