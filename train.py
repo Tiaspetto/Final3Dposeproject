@@ -1,4 +1,4 @@
-from data.data_scripts.readmat import *
+from data.data_scripts.data_utils import *
 from posenet_2d import *
 from keras.models import Model, load_model
 from keras import backend as K
