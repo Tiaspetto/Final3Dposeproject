@@ -15,7 +15,10 @@ sigma = 8.0
 lsp_img_source_path = "/data/lsp_dataset/images/"
 heatmap_path = "/data/lsp_dataset/heat/"
 
-ECCV_source_path = "/data/ECCV18Challenge/"
+ECCV_source_train_path = "/data/ECCV18Challenge/Train/"
+ECCV_source_val_path = "/data/ECCV18Challenge/Val/"
+
+
 
 def put_heatmap(heatmap, plane_idx, center):
     print(plane_idx, center, sigma)
@@ -32,13 +35,15 @@ def put_heatmap(heatmap, plane_idx, center):
     y1 = int(min(height, center_y + delta * sigma))
 
     for y in range(y0, y1):
-          for x in range(x0, x1):
-              d = (x - center_x) ** 2 + (y - center_y) ** 2
-              exp = d / 2.0 / sigma / sigma
-              if exp > th:
-                  continue
-              heatmap[plane_idx][y][x] = max(heatmap[plane_idx][y][x], math.exp(-exp))
-              heatmap[plane_idx][y][x] = min(heatmap[plane_idx][y][x], 1.0)
+        for x in range(x0, x1):
+            d = (x - center_x) ** 2 + (y - center_y) ** 2
+            exp = d / 2.0 / sigma / sigma
+            if exp > th:
+                continue
+            heatmap[plane_idx][y][x] = max(
+                heatmap[plane_idx][y][x], math.exp(-exp))
+            heatmap[plane_idx][y][x] = min(heatmap[plane_idx][y][x], 1.0)
+
 
 def get_heatmap(target_size, joint_list, height, width):
     heatmap = np.zeros((body_part, height, width), dtype=np.float32)
@@ -60,10 +65,12 @@ def get_heatmap(target_size, joint_list, height, width):
         result = []
         if target_size:
             for i in range(body_part):
-                result.append(cv2.resize(heatmap[i], target_size, interpolation=cv2.INTER_LINEAR))
-        
+                result.append(cv2.resize(
+                    heatmap[i], target_size, interpolation=cv2.INTER_LINEAR))
+
         result = np.asarray(result)
     return result.astype(np.float32)
+
 
 def re_orgnize(samples):
     x = []
@@ -81,8 +88,9 @@ def re_orgnize(samples):
 
     return result
 
+
 def get_picture_info(picid):
-    ima_path = os.path.abspath('.') + lsp_img_source_path 
+    ima_path = os.path.abspath('.') + lsp_img_source_path
     img_path = ima_path+"im{frames}.jpg"
     img_path = img_path.format(frames=str(picid).zfill(4))
 
@@ -92,10 +100,11 @@ def get_picture_info(picid):
 
 #img = cv2.imread("D:/dissertation/data/lsp_dataset/images/im0002.jpg")
 
-def pre_processing_lsp(file_name, picture_ids, target_size, debug_flag = False):
+
+def pre_processing_lsp(file_name, picture_ids, target_size, debug_flag=False):
     annot = scipy.io.loadmat(file_name)
     joints = annot['joints']
-  
+
     for picid in picture_ids:
         height, width = get_picture_info(picid)
         sample = joints[:, :, picid-1]
@@ -106,14 +115,15 @@ def pre_processing_lsp(file_name, picture_ids, target_size, debug_flag = False):
         if debug_flag == True:
             plt.figure()
             for i in range(body_part):
-                plt.subplot(4,4,i+1)
+                plt.subplot(4, 4, i+1)
                 imshow(heat[i]/255.0)
             plt.show()
-        else:  
+        else:
             heat_path = heatmap_path+"im{frames}.mat"
             heat_path = heat_path.format(frames=str(picid).zfill(4))
-            scipy.io.savemat(heat_path, {'heat':heat})
-  
+            scipy.io.savemat(heat_path, {'heat': heat})
+
+
 def read_heat_info(picid):
     heat_path = os.path.abspath('.') + heatmap_path
     heat_path = heat_path+"im{frames}.mat"
@@ -123,19 +133,32 @@ def read_heat_info(picid):
     heat = heat.transpose((1, 2, 0))
     return heat
 
-def read_image(picid, dataset = "lsp", datatype = "Train"):
+
+def read_image(picid, dataset = "lsp", isTrain = True):
     ima_path = ""
     if dataset == "lsp":
-        ima_path = os.path.abspath('.') + lsp_img_source_path 
-        img_path = ima_path+"im{frames}.jpg"
-        img_path = img_path.format(frames=str(picid).zfill(4))
-    else
+        ima_path = os.path.abspath('.') + lsp_img_source_path
+        img_path = ima_path + "im{pid}.jpg"
+        img_path = img_path.format(pid = str(picid).zfill(4))
+    elif dataset == "ECCV":
+        if isTrain == True:
+            ima_path = os.path.abspath('.') + ECCV_source_train_path
+            ima_path = ima_path + "IMG/"
+            ima_path = ima_path + "{pid}.jpg"
+            img_path = img_path.format(pid = str(picid).zfill(5))
+        else:
+            ima_path = os.path.abspath('.') + ECCV_source_val_path
+            ima_path = ima_path + "IMG/"
+            ima_path = ima_path + "{pid}.jpg"
+            img_path = img_path.format(pid = str(picid).zfill(5))
+
 
     img = cv2.imread(img_path)
 
-    img = cv2.resize(img, (224,224), interpolation=cv2.INTER_LINEAR)
+    img = cv2.resize(img, (224, 224), interpolation=cv2.INTER_LINEAR)
 
     return img
+
 
 def debug_read_heat_info(picid):
     heat_path = os.path.abspath('..') + "/lsp_dataset/heat/"
@@ -146,14 +169,17 @@ def debug_read_heat_info(picid):
     heat = data['heat']
     plt.figure()
     for i in range(body_part):
-        plt.subplot(4,4,i+1)
+        plt.subplot(4, 4, i+1)
         imshow(heat[i]/255.0)
     plt.show()
-    
+
     return heat
 
+
 def print_path():
-    print(os.path.abspath('.')+lsp_img_source_path ,os.path.abspath('.')+heatmap_path)
-      
+    print(os.path.abspath('.')+lsp_img_source_path,
+          os.path.abspath('.')+heatmap_path)
+
+
 if __name__ == '__main__':
     debug_read_heat_info(1)
