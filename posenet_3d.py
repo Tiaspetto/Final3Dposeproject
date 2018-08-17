@@ -24,29 +24,27 @@ def bilinear_interpolation(w):
 
     return w_bilinear
 
-def resnet50_32s(input_shape = (224, 224, 15), model_input = ''):
-    predict_shape = input_shape[3] - 1 
-    predict_shape = predict_shape * 3
-
+def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     base_model = PoseNet_50(input_shape)
     
+    #base_model.summary()
     if model_input != '':
         base_model.load_weights(model_input)
     
     #add predictor
-    X = base_model.get_layer('activation_44').output
-    X = Convolution2D(predict_shape, 1, 1, name = 'pred_32', init = 'zero', border_mode = 'valid')(x)
+    X = base_model.get_layer('leaky_re_lu_4').output
+    X = Conv2D(42, (1, 1), name = 'pred_32', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     # add upsampler
     stride = 32
-    X = UpSampling2D(size = (stride,stride))(x)
-    X = Convolution2D(predict_shape, 5, 5, name = 'pred_32s', init = 'zero', border_mode = 'same')(x)
+    X = UpSampling2D(size = (int(stride/2), int(stride/2)))(X)
+    X = Conv2D(42, (5, 5), name = 'pred_32s', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
-    X = AveragePooling2D(pool_size = (2, 2), padding = 'valid', name = 'avg_pool')(X)
+    #X = AveragePooling2D(pool_size = (2, 2), padding = 'valid', name = 'avg_pool')(X)
     
     # output layer
     X = Flatten()(X)
-    X = Dense(predict_shape , activation='linear', name='fc' + str('pred_32s'), kernel_initializer = glorot_uniform(seed=0))(X)
+    X = Dense(42, activation='linear', name='fc'  + str('pred_32s'), kernel_initializer = glorot_uniform(seed=0))(X)
     
     model = Model(input=base_model.input,output=X)
     
@@ -57,20 +55,6 @@ def resnet50_32s(input_shape = (224, 224, 15), model_input = ''):
     # fine-tune 
     train_layers = ['pred_32',
                     'pred_32s',
-
-                    'bn5c_branch2c', 
-                    'res5c_branch2c',
-                    'bn5c_branch2b', 
-                    'res5c_branch2b',
-                    'bn5c_branch2a', 
-                    'res5c_branch2a',
-
-                    'bn5b_branch2c', 
-                    'res5b_branch2c',
-                    'bn5b_branch2b', 
-                    'res5b_branch2b',
-                    'bn5b_branch2a', 
-                    'res5b_branch2a',
 
                     'bn5a_branch2c', 
                     'res5a_branch2c',
@@ -85,13 +69,9 @@ def resnet50_32s(input_shape = (224, 224, 15), model_input = ''):
         else :
             l.trainable = False
 
-    return model, strid
+    return model, stride
 
-def resnet50_16s(input_shape = (224, 224, 15), model_input = ''):
-
-    predict_shape = input_shape[3] - 1 
-    predict_shape = predict_shape * 3
-
+def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
     # load 32s base model
     base_model, stride = resnet50_32s(input_shape)
 
@@ -100,18 +80,18 @@ def resnet50_16s(input_shape = (224, 224, 15), model_input = ''):
     
     # add 16s classifier
     X = base_model.get_layer('activation_40').output
-    X = Convolution2D(predict_shape, 1, 1, name = 'pred_16', init = 'zero', border_mode = 'valid')(x)
-    X = UpSampling2D(name='upsampling_16', size = (stride/2, stride/2))(x)
-    X = Convolution2D(predict_shape, 5, 5, name = 'pred_16s', init = 'zero', border_mode = 'same')(x)
+    X = Conv2D(42, (1, 1), name = 'pred_16', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = UpSampling2D(name='upsampling_16', size = (int(stride/2), int(stride/2)))(X)
+    X = Conv2D(42, (5, 5), name = 'pred_16s', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     # merge classifiers
     X = merge([X, base_model.get_layer('pred_32s').output],mode = 'sum')
     
-    X = AveragePooling2D(pool_size=(2, 2), padding='valid', name='avg_pool')(X)
+    #X = AveragePooling2D(pool_size=(2, 2), padding='valid', name='avg_pool')(X)
     
     # output layer
     X = Flatten()(X)
-    X = Dense(predict_shape, activation='linear', name='fc' + str('pred_16s'), kernel_initializer = glorot_uniform(seed=0))(X)
+    X = Dense(42, activation='linear', name='fc' + str('pred_16s'), kernel_initializer = glorot_uniform(seed=0))(X)
     
     # create bilinear interpolation
     w = model.get_layer('pred_16s').get_weights()
@@ -123,19 +103,6 @@ def resnet50_16s(input_shape = (224, 224, 15), model_input = ''):
                     'pred_16',
                     'pred_16s',
 
-                    'bn5c_branch2c', 
-                    'res5c_branch2c',
-                    'bn5c_branch2b', 
-                    'res5c_branch2b',
-                    'bn5c_branch2a', 
-                    'res5c_branch2a',
-
-                    'bn5b_branch2c', 
-                    'res5b_branch2c',
-                    'bn5b_branch2b', 
-                    'res5b_branch2b',
-                    'bn5b_branch2a', 
-                    'res5b_branch2a',
 
                     'bn5a_branch2c', 
                     'res5a_branch2c',
@@ -152,9 +119,7 @@ def resnet50_16s(input_shape = (224, 224, 15), model_input = ''):
 
     return model, strid
    
-def resnet50_8s(input_shape = (224, 224, 15), model_input = ''):
-    predict_shape = input_shape[3] - 1 
-    predict_shape = predict_shape * 3
+def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     # load 16s base model
     base_model, stride = resnet50_16s(n_classes)
 
@@ -162,18 +127,18 @@ def resnet50_8s(input_shape = (224, 224, 15), model_input = ''):
         base_model.load_weights(model_input)
     
     # add 16s classifier
-    x = base_model.get_layer('activation_22').output
-    x = Convolution2D(predict_shape,1,1,name = 'pred_8',init='zero',border_mode = 'valid')(x)
-    x = UpSampling2D(name='upsampling_8',size=(stride/4,stride/4))(x)
-    x = Convolution2D(predict_shape,5,5,name = 'pred_8s',init='zero',border_mode = 'same')(x)
+    X = base_model.get_layer('activation_22').output
+    X = Conv2D(42, (1, 1), name = 'pred_8', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = UpSampling2D(name='upsampling_8',size=(int(stride/8), int(stride/8)))(X)
+    X = Conv2D(42, (5, 5), name = 'pred_8s', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     # merge classifiers
-    x = merge([x, base_model.get_layer('pred_16s').output],mode = 'sum')
+    X = merge([X, base_model.get_layer('pred_16s').output],mode = 'sum')
     
     # output layer
     X = Flatten()(X)
-    X = Dense(predict_shape , activation='linear', name='fc' + str('pred_8s'), kernel_initializer = glorot_uniform(seed=0))(X)
-    model = Model(input=base_model.input,output=x)
+    X = Dense(42 , activation='linear', name='fc' + str('pred_8s'), kernel_initializer = glorot_uniform(seed=0))(X)
+    model = Model(input=base_model.input,output=X)
 
     # create bilinear interpolation
     w = model.get_layer('pred_8s').get_weights()
@@ -186,20 +151,6 @@ def resnet50_8s(input_shape = (224, 224, 15), model_input = ''):
                     'pred_16s',
                     'pred_8',
                     'pred_8s',
-
-                    'bn5c_branch2c', 
-                    'res5c_branch2c',
-                    'bn5c_branch2b', 
-                    'res5c_branch2b',
-                    'bn5c_branch2a', 
-                    'res5c_branch2a',
-
-                    'bn5b_branch2c', 
-                    'res5b_branch2c',
-                    'bn5b_branch2b', 
-                    'res5b_branch2b',
-                    'bn5b_branch2a', 
-                    'res5b_branch2a',
 
                     'bn5a_branch2c', 
                     'res5a_branch2c',

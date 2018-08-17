@@ -9,16 +9,17 @@ from mpl_toolkits.mplot3d import Axes3D
 import math
 from matplotlib.pyplot import imshow
 import os
+import csv
 body_part = 14
 sigma = 8.0
 
 lsp_img_source_path = "/data/lsp_dataset/images/"
 heatmap_path = "/data/lsp_dataset/heat/"
 
-ECCV_source_train_path = "/data/ECCV18Challenge/Train/"
-ECCV_source_val_path = "/data/ECCV18Challenge/Val/"
+ECCV_source_train_path = "/data/ECCV18_Challenge/Train/"
+ECCV_source_val_path = "/data/ECCV18_Challenge/Val/"
 
-
+ECCV_joints = [1, 2, 3, 4, 5, 6, 8, 9, 11, 12, 13, 14, 15, 16]
 
 def put_heatmap(heatmap, plane_idx, center):
     print(plane_idx, center, sigma)
@@ -135,28 +136,30 @@ def read_heat_info(picid):
 
 
 def read_image(picid, dataset = "lsp", isTrain = True):
-    ima_path = ""
+    img_path = ""
     if dataset == "lsp":
-        ima_path = os.path.abspath('.') + lsp_img_source_path
-        img_path = ima_path + "im{pid}.jpg"
+        img_path = os.path.abspath('.') + lsp_img_source_path
+        img_path = img_path + "im{pid}.jpg"
         img_path = img_path.format(pid = str(picid).zfill(4))
     elif dataset == "ECCV":
         if isTrain == True:
-            ima_path = os.path.abspath('.') + ECCV_source_train_path
-            ima_path = ima_path + "IMG/"
-            ima_path = ima_path + "{pid}.jpg"
+            img_path = os.path.abspath('.') + ECCV_source_train_path
+            img_path = img_path + "IMG/"
+            img_path = img_path + "{pid}.jpg"
             img_path = img_path.format(pid = str(picid).zfill(5))
         else:
-            ima_path = os.path.abspath('.') + ECCV_source_val_path
-            ima_path = ima_path + "IMG/"
-            ima_path = ima_path + "{pid}.jpg"
+            img_path = os.path.abspath('.') + ECCV_source_val_path
+            img_path = img_path + "IMG/"
+            img_path = img_path + "{pid}.jpg"
             img_path = img_path.format(pid = str(picid).zfill(5))
-
+   
+    #print(img_path)
 
     img = cv2.imread(img_path)
 
     img = cv2.resize(img, (224, 224), interpolation=cv2.INTER_LINEAR)
-
+    
+    #print(np.shape(img))
     return img
 
 
@@ -174,6 +177,35 @@ def debug_read_heat_info(picid):
     plt.show()
 
     return heat
+
+def read_pose_data(picid, isTrain):
+    pose_path = ""
+    if isTrain:
+        pose_path = os.path.abspath('.') + ECCV_source_train_path
+        pose_path = pose_path + "POSE/"
+        pose_path = pose_path + "{pid}.csv"
+        pose_path = pose_path.format(pid = str(picid).zfill(5))
+    else:
+        pose_path = os.path.abspath('.') + ECCV_source_val_path
+        pose_path = pose_path + "POSE/"
+        pose_path = pose_path + "{pid}.csv"
+        pose_path = pose_path.format(pid = str(picid).zfill(5))
+
+    with open(pose_path,'r') as csvfile:
+        reader = csv.reader(csvfile)
+        data = []
+        index = 0
+        for row in reader:
+            if index in ECCV_joints:
+                data.append(row)
+            index += 1
+
+        data =np.array(data)
+        data = np.reshape(data, (42, ))
+
+    #print(data)
+    return(data)
+
 
 
 def print_path():
