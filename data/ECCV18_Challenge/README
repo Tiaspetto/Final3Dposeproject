@@ -1,0 +1,69 @@
+
+============================== This is the 3D Human Pose Estimation section of the ECCV 2018 PoseTrack Challenge ======================
+
+
+==== DATA
+
+- There 5 subjects for training and 2 for validation
+
+- There are a total of 15 actions performed by the actors
+
+- In the 'Train' ('Val') folder there are 2 sub-folders:
+	- 'IMG' ----> contains 35832 (19312) RGB images (JPG format) depicting single people in the Human3.6M laboratory setting
+
+			 %05d.jpg (from 00001.jpg to 35831.jpg/19312.jpg)
+
+        - 'POSE'   ----> contains the corresponding 35832 (19312) pose (CSV format) information
+
+			 %05d.csv (from 00001.csv to 35831.csv/19312.csv)
+
+			 X00,Y00,Z00
+			 X01,Y01,Z01
+			 ...
+			 X15,Y15,Z15
+			 X16,Y16,Z16
+	
+			 These are XYZ coordinates relative to the pelvis-joint (X00 = 0, Y00 = 0, Z00 = 0 is the pelvis-joint), expressed in millimeters (mm).
+
+		   ----> the 17 joints - in order - are:
+
+			 {'Pelvis'    'RHip'    'RKnee'    'RAnkle'    'LHip'    'LKnee'    'LAnkle'    'Spine1'    'Neck'    'Head'    'Site'  'LShoulder'    'LElbow'    'LWrist'    'RShoulder'    				 'RElbow'    'RWrist};
+
+==== VISUALIZATION
+
+  - To visualize a pose associated with a particular image, run the following commands:
+		
+		cd MY_PATH/Scripts
+		python plotSkel.py ../Train/POSE/14232.csv
+
+		
+==== VALIDATING
+
+- To validate the method on the validation data (in 'Val') follow these steps:
+
+	1. Assuming that the data is in 'MY_PATH', then for each image in Val/IMG, 
+	   generate a .csv file with the same name, in a separate folder 'MY_PATH/Val/PRED'
+
+	2. EACH .csv file should have the same format as the train files:
+
+		%05d.csv (from 00001.csv to 19312.csv)
+
+			 X00,Y00,Z00
+			 X01,Y01,Z01
+			 ...
+			 X15,Y15,Z15
+			 X16,Y16,Z16
+
+		containing 17x3 predictions. Please NOTE that each skeleton is centered w.r.t to the pelvis: X00,Y00,Z00 should always be 0.
+
+	3. From the folder 'MY_PATH/Scripts', run the following command: "python validate.py -p MY_PATH/Val/PRED"
+
+		EXAMPLE RUN:
+
+		cd MY_PATH/Scripts
+		python validate.py -p ../Val/PRED
+
+	4. The error is computed as the mean MPJPE metric, expressed in mm.
+
+
+
