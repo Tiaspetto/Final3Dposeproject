@@ -37,6 +37,22 @@ def pose2d_get_train_batch(index_array, batch_size):
             #print(np.shape(x), np.shape(y))
             yield (x, y)
 
+def pose2d_get_further_train_batch(index_array, batch_size, isTrain):
+    data = get_MPII_data(isTrain)
+    while 1:
+        for i in range(0, len(index_array), batch_size):
+            batch_array = index_array[i:i+batch_size]
+            imgs =  []
+            heats = []   
+            for index in batch_array:
+                img, height, width = MPI_read_img(data[index][0])
+                imgs.append(img)
+                heats.append(MPI_read_heat_info(isTrain, data[index][0]))
+
+            yield (np.array(imgs), np.array(heats))
+
+
+
 
 def pose3d_get_img_batch(batch_array, isTrain):
     imgs = []
@@ -115,6 +131,37 @@ def train_2d():
                                  validation_data=pose2d_get_train_batch(validation_array, 8),
                                  validation_steps=52,
                                  workers=1)
+
+def feature_train_2d():
+    train_array = range(0, 17928)
+
+    train_array = list(train_array)
+
+    train_array = shuffle(train_array)
+
+    validation_array = list(range(0,1991))
+
+    ckpt_path = 'log/weights-{val_loss:.4f}.hdf5'
+    ckpt = tf.keras.callbacks.ModelCheckpoint(ckpt_path,
+                                              monitor='val_loss',
+                                              verbose=1,
+                                              save_best_only=True,
+                                              mode='min')
+
+    model = PoseNet_50(input_shape=(224, 224, 3))
+    adadelta = optimizers.Adadelta(lr = 0.05, rho = 0.9, decay = 0.0)
+    model.load_weights("D:/dissertation/model_data/weights-0.0753.hdf5")
+    model.compile(optimizer = adadelta, loss = euc_dist_keras,
+                  metrics=['mae'])
+    lrate = LearningRateScheduler(step_decay)
+    result = model.fit_generator(generator=pose2d_get_further_train_batch(train_array, 8, True),
+                                 steps_per_epoch=2241,
+                                 callbacks=[ckpt, lrate],
+                                 epochs=60000, verbose=1,
+                                 validation_data=pose2d_get_further_train_batch(validation_array, 8, False),
+                                 validation_steps=249,
+                                 workers=1)
+
 def train_3d():
     train_array = list(range(1, 35833))
     train_array = shuffle(train_array)
@@ -142,5 +189,6 @@ def train_3d():
                                  validation_steps=2415,
                                  workers=1)
 if __name__ == '__main__':
-    train_2d()
+    #train_2d()
     #train_3d()
+    feature_train_2d()

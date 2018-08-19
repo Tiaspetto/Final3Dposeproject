@@ -9,3 +9,5 @@
 *.tar
 *.pyc
 *.csv
+*.json
+*.hdf5
