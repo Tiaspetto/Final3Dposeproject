@@ -95,7 +95,7 @@ def euc_dist_keras(y_true, y_pred):
 def step_decay(epochs):
     initial_lrate = 0.05
     drop = 0.5
-    epochs_drop = 8
+    epochs_drop = 10
     lrate = initial_lrate * math.pow(drop, math.floor((1+epochs)/epochs_drop))
 
     lrate = max(float('3.3e-5'), lrate)
@@ -176,7 +176,7 @@ def train_3d():
                                               mode='min')
 
     model, stride = resnet50_32s(input_shape=(
-        224, 224, 3), model_input="D:/dissertation/model_data/weights-0.2056.hdf5")
+        224, 224, 3), model_input="D:/dissertation/model_data/weights-0.0685.hdf5")
     adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     model.compile(optimizer=adadelta, loss=euc_dist_keras,
                   metrics=['mae'])
@@ -190,5 +190,5 @@ def train_3d():
                                  workers=1)
 if __name__ == '__main__':
     #train_2d()
-    #train_3d()
-    feature_train_2d()
+    train_3d()
+    #feature_train_2d()
