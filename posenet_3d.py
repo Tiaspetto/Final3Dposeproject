@@ -70,8 +70,8 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     model = Model(input=base_model.input,output=X)
     
     # create bilinear interpolation
-    w = model.get_layer('pred_32s').get_weights()
-    model.get_layer('pred_32s').set_weights([bilinear_interpolation(w), w[1]])
+    #w = model.get_layer('pred_32s').get_weights()
+    #model.get_layer('pred_32s').set_weights([bilinear_interpolation(w), w[1]])
     
     # fine-tune 
     train_layers = ['pred_32',
@@ -139,8 +139,8 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
     X = Dense(42, activation='linear', name='fc_'  + str('pred_16s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     # create bilinear interpolation
-    w = model.get_layer('pred_16s').get_weights()
-    model.get_layer('pred_16s').set_weights([bilinear_interpolation(w), w[1]])
+    #w = model.get_layer('pred_16s').get_weights()
+    #model.get_layer('pred_16s').set_weights([bilinear_interpolation(w), w[1]])
 
     # fine-tune 
     train_layers = ['pred_32',
@@ -213,8 +213,8 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     X = Dense(42, activation='linear', name='fc2_'  + str('pred_8s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
 
     # create bilinear interpolation
-    w = model.get_layer('pred_8s').get_weights()
-    model.get_layer('pred_8s').set_weights([bilinear_interpolation(w), w[1]])
+    #w = model.get_layer('pred_8s').get_weights()
+    #model.get_layer('pred_8s').set_weights([bilinear_interpolation(w), w[1]])
 
     # fine-tune 
     train_layers = ['pred_32',
