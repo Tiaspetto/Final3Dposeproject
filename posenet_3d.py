@@ -52,19 +52,31 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     X = Conv2D(14, (1, 1), name = 'pred_32', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     # add upsampler
-    stride = 16
+    stride = 32
     X = UpSampling2D(size = (int(stride/2), int(stride/2)))(X)
-    X = Conv2D(256, (5, 5), strides = (2, 2), name = 'pred_32s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+
+    X = Conv2D(256, (3, 3), strides = (1, 1), name = 'pred_32s_feature1', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
+
+    X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_32s_feature2', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
+
+    X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_32s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
-    X = Conv2D(512, (5, 5), strides = (2, 2), name = 'pred_32s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_32s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
-    X = Conv2D(1024, (3, 3), strides = (1, 1), name = 'pred_32s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_32s_p3', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
+
+    X = Conv2D(128, (5, 5), strides = (1, 1), name = 'pred_32s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
 
     # output layer
     X = Flatten()(X)
+    X = Dense(1024, activation='linear', name='fc_'  + str('pred_32s_1024'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
     X = Dense(42, activation='linear', name='fc_'  + str('pred_32s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     model = Model(input=base_model.input,output=X)
@@ -75,9 +87,13 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     
     # fine-tune 
     train_layers = ['pred_32',
-                    'pred_32s_p1'
-                    'pred_32s_p2'
+                    'pred_32s_feature1',
+                    'pred_32s_feature2',
+                    'pred_32s_p1',
+                    'pred_32s_p2',
+                    'pred_32s_p3',
                     'pred_32s',
+                    'fc_pred_32s_1024',
                     'fc_pred_32s',
 
                     'bn4b_branch2c', 
@@ -120,13 +136,22 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
     X = base_model.get_layer('activation_40').output
     X = Conv2D(42, (1, 1), name = 'pred_16', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = UpSampling2D(name='upsampling_16', size = (int(stride/2), int(stride/2)))(X)
-    X = Conv2D(256, (5, 5), strides = (2, 2), name = 'pred_16s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(256, (3, 3), strides = (1, 1), name = 'pred_16s_feature1', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
+
+    X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_16s_feature2', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
+
+    X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_16s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
-    X = Conv2D(512, (5, 5), strides = (2, 2), name = 'pred_16s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_16s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
-    X = Conv2D(1024, (3, 3), strides = (1, 1), name = 'pred_16s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_16s_p3', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
+
+    X = Conv2D(128, (5, 5), strides = (1, 1), name = 'pred_16s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     # merge classifiers
     X = merge([X, base_model.get_layer('pred_32s').output],mode = 'sum')
@@ -135,7 +160,9 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
     
     # output layer
     X = Flatten()(X)
-
+    
+    X = Dense(1024, activation='linear', name='fc_'  + str('pred_16s_1024'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
     X = Dense(42, activation='linear', name='fc_'  + str('pred_16s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     # create bilinear interpolation
@@ -144,13 +171,20 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
 
     # fine-tune 
     train_layers = ['pred_32',
-                    'pred_32s_p1'
-                    'pred_32s_p2'
+                    'pred_32s_feature1',
+                    'pred_32s_feature2',
+                    'pred_32s_p1',
+                    'pred_32s_p2',
+                    'pred_32s_p3',
                     'pred_32s',
                     'pred_16',
-                    'pred_16s_p1'
-                    'pred_16s_p2'
+                    'pred_16s_feature1',
+                    'pred_16s_feature2',
+                    'pred_16s_p1',
+                    'pred_16s_p2',
+                    'pred_16s_p3',
                     'pred_16s',
+                    'fc_pred_16s_1024'
                     'fc_pred_16s',
 
 
@@ -195,13 +229,22 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     X = base_model.get_layer('activation_22').output
     X = Conv2D(42, (1, 1), name = 'pred_8', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = UpSampling2D(name='upsampling_8',size=(int(stride/8), int(stride/8)))(X)
-    X = Conv2D(256, (5, 5), strides = (2, 2), name = 'pred_8s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(256, (3, 3), strides = (1, 1), name = 'pred_8s_feature1', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
+
+    X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_8s_feature2', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
+
+    X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_8s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
-    X = Conv2D(512, (5, 5), strides = (2, 2), name = 'pred_8s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_8s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
-    X = Conv2D(1024, (3, 3), strides = (1, 1), name = 'pred_8s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_8s_p3', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
+
+    X = Conv2D(128, (5, 5), strides = (1, 1), name = 'pred_8s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
 
     # merge classifiers
@@ -209,7 +252,8 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     
     # output layer
     X = Flatten()(X)
-
+    X = Dense(1024, activation='linear', name='fc_'  + str('pred_8s_1024'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
     X = Dense(42, activation='linear', name='fc_'  + str('pred_8s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
 
     # create bilinear interpolation
@@ -218,17 +262,24 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
 
     # fine-tune 
     train_layers = ['pred_32',
-                    'pred_32s_p1'
-                    'pred_32s_p2'
+                    'pred_32s_feature1',
+                    'pred_32s_feature2',
+                    'pred_32s_p1',
+                    'pred_32s_p2',
+                    'pred_32s_p3',
                     'pred_32s',
                     'pred_16',
-                    'pred_16s_p1'
-                    'pred_16s_p2'
+                    'pred_16s_feature1',
+                    'pred_16s_feature2',
+                    'pred_16s_p1',
+                    'pred_16s_p2',
+                    'pred_16s_p3',
                     'pred_16s',
                     'pred_8',
                     'pred_8s_p1'
                     'pred_8s_p2'
                     'pred_8s',
+                    'fc_pred_16s_1024'
                     'fc_pred_8s',
 
                     'bn4b_branch2c', 
