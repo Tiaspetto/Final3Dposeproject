@@ -54,7 +54,7 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     # add upsampler
     stride = 16
     X = UpSampling2D(size = (int(stride/2), int(stride/2)))(X)
-    X = Conv2D(14, (5, 5), strides = (2, 2) name = 'pred_32s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(14, (5, 5), strides = (2, 2), name = 'pred_32s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
     
