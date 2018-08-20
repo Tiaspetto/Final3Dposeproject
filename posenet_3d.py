@@ -81,10 +81,6 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     
     model = Model(input=base_model.input,output=X)
     
-    # create bilinear interpolation
-    #w = model.get_layer('pred_32s').get_weights()
-    #model.get_layer('pred_32s').set_weights([bilinear_interpolation(w), w[1]])
-    
     # fine-tune 
     train_layers = ['pred_32',
                     'pred_32s_feature1',
