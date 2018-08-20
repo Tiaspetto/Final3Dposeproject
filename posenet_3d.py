@@ -210,7 +210,7 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     # output layer
     X = Flatten()(X)
 
-    X = Dense(42, activation='linear', name='fc2_'  + str('pred_8s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Dense(42, activation='linear', name='fc_'  + str('pred_8s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
 
     # create bilinear interpolation
     #w = model.get_layer('pred_8s').get_weights()
