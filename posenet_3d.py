@@ -56,6 +56,20 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     train_layers = ['pred_32',
                     'pred_32s',
 
+                    'bn4b_branch2c', 
+                    'res4b_branch2c',
+                    'bn4b_branch2b', 
+                    'res4b_branch2b',
+                    'bn4b_branch2a', 
+                    'res4b_branch2a'
+
+                    'bn4c_branch2c', 
+                    'res4c_branch2c',
+                    'bn4c_branch2b', 
+                    'res4c_branch2b',
+                    'bn4c_branch2a', 
+                    'res4c_branch2a'
+
                     'bn5a_branch2c', 
                     'res5a_branch2c',
                     'bn5a_branch2b', 
@@ -104,12 +118,27 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
                     'pred_16s',
 
 
+                    'bn4b_branch2c', 
+                    'res4b_branch2c',
+                    'bn4b_branch2b', 
+                    'res4b_branch2b',
+                    'bn4b_branch2a', 
+                    'res4b_branch2a'
+
+                    'bn4c_branch2c', 
+                    'res4c_branch2c',
+                    'bn4c_branch2b', 
+                    'res4c_branch2b',
+                    'bn4c_branch2a', 
+                    'res4c_branch2a'
+
                     'bn5a_branch2c', 
                     'res5a_branch2c',
                     'bn5a_branch2b', 
                     'res5a_branch2b',
                     'bn5a_branch2a', 
                     'res5a_branch2a']
+
 
     for l in model.layers:
         if l.name in train_layers:
@@ -152,12 +181,27 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
                     'pred_8',
                     'pred_8s',
 
+                    'bn4b_branch2c', 
+                    'res4b_branch2c',
+                    'bn4b_branch2b', 
+                    'res4b_branch2b',
+                    'bn4b_branch2a', 
+                    'res4b_branch2a'
+
+                    'bn4c_branch2c', 
+                    'res4c_branch2c',
+                    'bn4c_branch2b', 
+                    'res4c_branch2b',
+                    'bn4c_branch2a', 
+                    'res4c_branch2a'
+
                     'bn5a_branch2c', 
                     'res5a_branch2c',
                     'bn5a_branch2b', 
                     'res5a_branch2b',
                     'bn5a_branch2a', 
                     'res5a_branch2a']
+
 
     for l in model.layers:
         if l.name in train_layers:
