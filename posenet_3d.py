@@ -43,12 +43,12 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     
     # output layer
     X = Flatten()(X)
-    X = Dense(1024, activation='linear', name='fc1_'  + str('pred_32s'), kernel_initializer = glorot_uniform(seed=0))(X)
+    X = Dense(256, activation='linear', name='fc1_'  + str('pred_32s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = BatchNormalization(axis = -1, name = 'bn1_pred32s')(X)
     X = LeakyReLU(alpha=.001)(X)
     X = Dropout(0.5)(X)
 
-    X = Dense(42, activation='linear', name='fc2_'  + str('pred_32s'), kernel_initializer = glorot_uniform(seed=0))(X)
+    X = Dense(42, activation='linear', name='fc2_'  + str('pred_32s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     model = Model(input=base_model.input,output=X)
     
@@ -112,12 +112,12 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
     
     # output layer
     X = Flatten()(X)
-    X = Dense(1024, activation='linear', name='fc1_'  + str('pred_16s'), kernel_initializer = glorot_uniform(seed=0))(X)
+    X = Dense(256, activation='linear', name='fc1_'  + str('pred_16s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = BatchNormalization(axis = -1, name = 'bn1_pred16s')(X)
     X = LeakyReLU(alpha=.001)(X)
     X = Dropout(0.5)(X)
 
-    X = Dense(42, activation='linear', name='fc2_'  + str('pred_16s'), kernel_initializer = glorot_uniform(seed=0))(X)
+    X = Dense(42, activation='linear', name='fc2_'  + str('pred_16s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     # create bilinear interpolation
     w = model.get_layer('pred_16s').get_weights()
@@ -181,12 +181,12 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     
     # output layer
     X = Flatten()(X)
-    X = Dense(1024, activation='linear', name='fc1_'  + str('pred_8s'), kernel_initializer = glorot_uniform(seed=0))(X)
+    X = Dense(256, activation='linear', name='fc1_'  + str('pred_8s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = BatchNormalization(axis = -1, name = 'bn1_pred_8s')(X)
     X = LeakyReLU(alpha=.001)(X)
     X = Dropout(0.5)(X)
 
-    X = Dense(42, activation='linear', name='fc2_'  + str('pred_8s'), kernel_initializer = glorot_uniform(seed=0))(X)
+    X = Dense(42, activation='linear', name='fc2_'  + str('pred_8s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
 
     # create bilinear interpolation
     w = model.get_layer('pred_8s').get_weights()
