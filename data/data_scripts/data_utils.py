@@ -145,10 +145,10 @@ def read_image(picid, dataset = "lsp", isTrain = True):
     elif dataset == "ECCV":
         if isTrain == True:
             img_path = "{root_path}{data_path}IMG/{pid}.jpg"
-            img_path = img_path.format(root_path = os.pose_path.abspath('.'), data_path = ECCV_source_train_path, pid  = str(picid).zfill(5))
+            img_path = img_path.format(root_path = os.path.abspath('.'), data_path = ECCV_source_train_path, pid  = str(picid).zfill(5))
         else:
             img_path = "{root_path}{data_path}IMG/{pid}.jpg"
-            img_path = img_path.format(root_path = os.pose_path.abspath('.'), data_path = ECCV_source_val_path, pid  = str(picid).zfill(5))
+            img_path = img_path.format(root_path = os.path.abspath('.'), data_path = ECCV_source_val_path, pid  = str(picid).zfill(5))
    
     #print(img_path)
 
