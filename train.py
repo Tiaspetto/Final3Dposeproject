@@ -150,7 +150,7 @@ def feature_train_2d():
 
     model = PoseNet_50(input_shape=(224, 224, 3))
     adadelta = optimizers.Adadelta(lr = 0.05, rho = 0.9, decay = 0.0)
-    model.load_weights("D:/dissertation/model_data/weights-0.0753.hdf5")
+    model.load_weights("model_data/weights-0.0753.hdf5")
     model.compile(optimizer = adadelta, loss = euc_dist_keras,
                   metrics=['mae'])
     lrate = LearningRateScheduler(step_decay)
@@ -176,7 +176,7 @@ def train_3d():
                                               mode='min')
 
     model, stride = resnet50_32s(input_shape=(
-        224, 224, 3), model_input="D:/dissertation/model_data/weights-0.0685.hdf5")
+        224, 224, 3), model_input="model_data/weights-0.0685.hdf5")
     adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     model.compile(optimizer=adadelta, loss=euc_dist_keras,
                   metrics=['mae'])
