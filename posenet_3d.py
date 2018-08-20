@@ -14,6 +14,22 @@ from posenet_2d import *
 
 import numpy as np
 
+class Softmax4D(Layer):
+    def __init__(self, axis=-1,**kwargs):
+        self.axis=axis
+        super(Softmax4D, self).__init__(**kwargs)
+
+    def build(self,input_shape):
+        pass
+
+    def call(self, x,mask=None):
+        e = K.exp(x - K.max(x, axis=self.axis, keepdims=True))
+        s = K.sum(e, axis=self.axis, keepdims=True)
+        return e / s
+
+    def get_output_shape_for(self, input_shape):
+        return input_shape
+
 def bilinear_interpolation(w):
     frac = w[0].shape[0]
     n_predict = w[0].shape[-1]
@@ -33,16 +49,22 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     
     #add predictor
     X = base_model.get_layer('leaky_re_lu_4').output
-    X = Conv2D(42, (1, 1), name = 'pred_32', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(14, (1, 1), name = 'pred_32', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     # add upsampler
-    stride = 32
+    stride = 16
     X = UpSampling2D(size = (int(stride/2), int(stride/2)))(X)
-    X = Conv2D(42, (5, 5), name = 'pred_32s', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(14, (5, 5), name = 'pred_32s', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
+    
+    X = Conv2D(256, (3, 3), name = 'pred_32s_down1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
+    X = Conv2D(512, (3, 3), name = 'pred_32s_down1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = LeakyReLU(alpha=.001)(X)
+    X = Conv2D(1024, (3, 3), name = 'pred_32s_down1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
     # output layer
-    X = Flatten()(X)
     X = Dense(42, activation='linear', name='fc_'  + str('pred_32s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     model = Model(input=base_model.input,output=X)
@@ -55,6 +77,9 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     train_layers = ['pred_32',
                     'pred_32s',
                     'fc_pred_32s',
+                    'pred_32s_down1',
+                    'pred_32s_down2',
+                    'pred_32s_down3',
 
                     'bn4b_branch2c', 
                     'res4b_branch2c',
