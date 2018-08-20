@@ -182,13 +182,13 @@ def train_3d():
                   metrics=['mae'])
     lrate = LearningRateScheduler(step_decay)
     model.summary()
-    # result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 4, True),
-    #                              steps_per_epoch=8959,
-    #                              callbacks=[ckpt, lrate],
-    #                              epochs=60000, verbose=1,
-    #                              validation_data=pose3d_get_train_batch(val_array, 4, False),
-    #                              validation_steps=4829,
-    #                              workers=1)
+    result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 4, True),
+                                 steps_per_epoch=8959,
+                                 callbacks=[ckpt, lrate],
+                                 epochs=60000, verbose=1,
+                                 validation_data=pose3d_get_train_batch(val_array, 4, False),
+                                 validation_steps=4829,
+                                 workers=1)
 if __name__ == '__main__':
     #train_2d()
     train_3d()
