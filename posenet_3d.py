@@ -43,12 +43,7 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     
     # output layer
     X = Flatten()(X)
-    X = Dense(256, activation='linear', name='fc1_'  + str('pred_32s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = BatchNormalization(axis = -1, name = 'bn1_pred32s')(X)
-    X = LeakyReLU(alpha=.001)(X)
-    X = Dropout(0.5)(X)
-
-    X = Dense(42, activation='linear', name='fc2_'  + str('pred_32s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Dense(42, activation='linear', name='fc_'  + str('pred_32s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     model = Model(input=base_model.input,output=X)
     
@@ -59,9 +54,7 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     # fine-tune 
     train_layers = ['pred_32',
                     'pred_32s',
-                    'fc1_pred_32s',
-                    'bn1_pred_32s',
-                    'fc2_pred_32s',
+                    'fc_pred_32s',
 
                     'bn4b_branch2c', 
                     'res4b_branch2c',
@@ -112,12 +105,8 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
     
     # output layer
     X = Flatten()(X)
-    X = Dense(256, activation='linear', name='fc1_'  + str('pred_16s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = BatchNormalization(axis = -1, name = 'bn1_pred16s')(X)
-    X = LeakyReLU(alpha=.001)(X)
-    X = Dropout(0.5)(X)
 
-    X = Dense(42, activation='linear', name='fc2_'  + str('pred_16s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Dense(42, activation='linear', name='fc_'  + str('pred_16s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     # create bilinear interpolation
     w = model.get_layer('pred_16s').get_weights()
@@ -128,9 +117,7 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
                     'pred_32s',
                     'pred_16',
                     'pred_16s',
-                    'fc1_pred_16s',
-                    'bn1_pred_16s',
-                    'fc2_pred_16s',
+                    'fc_pred_16s',
 
 
                     'bn4b_branch2c', 
@@ -181,10 +168,6 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     
     # output layer
     X = Flatten()(X)
-    X = Dense(256, activation='linear', name='fc1_'  + str('pred_8s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = BatchNormalization(axis = -1, name = 'bn1_pred_8s')(X)
-    X = LeakyReLU(alpha=.001)(X)
-    X = Dropout(0.5)(X)
 
     X = Dense(42, activation='linear', name='fc2_'  + str('pred_8s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
 
@@ -199,9 +182,7 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
                     'pred_16s',
                     'pred_8',
                     'pred_8s',
-                    'fc1_pred_8s',
-                    'bn1_pred_8s',
-                    'fc2_pred_8s',
+                    'fc_pred_8s',
 
                     'bn4b_branch2c', 
                     'res4b_branch2c',
