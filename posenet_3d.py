@@ -67,10 +67,10 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_32s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
-    X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_32s_p3', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (3, 3), strides = (2, 2), name = 'pred_32s_p3', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
 
-    X = Conv2D(128, (5, 5), strides = (1, 1), name = 'pred_32s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_32s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
 
     # output layer
@@ -148,10 +148,10 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_16s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
-    X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_16s_p3', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (3, 3), strides = (2, 2), name = 'pred_16s_p3', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
 
-    X = Conv2D(128, (5, 5), strides = (1, 1), name = 'pred_16s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_16s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     # merge classifiers
     X = merge([X, base_model.get_layer('pred_32s').output],mode = 'sum')
@@ -241,10 +241,10 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_8s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
-    X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_8s_p3', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (3, 3), strides = (2, 2), name = 'pred_8s_p3', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
 
-    X = Conv2D(128, (5, 5), strides = (1, 1), name = 'pred_8s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_8s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
 
     # merge classifiers

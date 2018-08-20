@@ -176,18 +176,19 @@ def train_3d():
                                               mode='min')
 
     model, stride = resnet50_32s(input_shape=(
-        224, 224, 3), model_input="model_data/weights-0.0685.hdf5")
+        224, 224, 3), model_input="model_data/weights-0.0753.hdf5")
     adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     model.compile(optimizer=adadelta, loss=euc_dist_keras,
                   metrics=['mae'])
     lrate = LearningRateScheduler(step_decay)
-    result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 4, True),
-                                 steps_per_epoch=8959,
-                                 callbacks=[ckpt, lrate],
-                                 epochs=60000, verbose=1,
-                                 validation_data=pose3d_get_train_batch(val_array, 4, False),
-                                 validation_steps=4829,
-                                 workers=1)
+    model.summary()
+    # result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 4, True),
+    #                              steps_per_epoch=8959,
+    #                              callbacks=[ckpt, lrate],
+    #                              epochs=60000, verbose=1,
+    #                              validation_data=pose3d_get_train_batch(val_array, 4, False),
+    #                              validation_steps=4829,
+    #                              workers=1)
 if __name__ == '__main__':
     #train_2d()
     train_3d()
