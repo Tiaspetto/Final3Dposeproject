@@ -54,10 +54,10 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     # add upsampler
     stride = 16
     X = UpSampling2D(size = (int(stride/2), int(stride/2)))(X)
-    X = Conv2D(256, (5, 5), strides = (1, 1), name = 'pred_32s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(256, (5, 5), strides = (2, 2), name = 'pred_32s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
-    X = Conv2D(512, (5, 5), strides = (1, 1), name = 'pred_32s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(512, (5, 5), strides = (2, 2), name = 'pred_32s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
     X = Conv2D(1024, (3, 3), strides = (1, 1), name = 'pred_32s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
@@ -120,10 +120,10 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
     X = base_model.get_layer('activation_40').output
     X = Conv2D(42, (1, 1), name = 'pred_16', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = UpSampling2D(name='upsampling_16', size = (int(stride/2), int(stride/2)))(X)
-    X = Conv2D(256, (5, 5), strides = (1, 1), name = 'pred_16s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(256, (5, 5), strides = (2, 2), name = 'pred_16s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
-    X = Conv2D(512, (5, 5), strides = (1, 1), name = 'pred_16s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(512, (5, 5), strides = (2, 2), name = 'pred_16s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
     X = Conv2D(1024, (3, 3), strides = (1, 1), name = 'pred_16s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
@@ -195,10 +195,10 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     X = base_model.get_layer('activation_22').output
     X = Conv2D(42, (1, 1), name = 'pred_8', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = UpSampling2D(name='upsampling_8',size=(int(stride/8), int(stride/8)))(X)
-    X = Conv2D(256, (5, 5), strides = (1, 1), name = 'pred_8s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(256, (5, 5), strides = (2, 2), name = 'pred_8s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
-    X = Conv2D(512, (5, 5), strides = (1, 1), name = 'pred_8s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(512, (5, 5), strides = (2, 2), name = 'pred_8s_p2', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = LeakyReLU(alpha=.001)(X)
     
     X = Conv2D(1024, (3, 3), strides = (1, 1), name = 'pred_8s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
