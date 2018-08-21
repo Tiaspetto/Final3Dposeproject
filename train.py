@@ -95,7 +95,7 @@ def euc_dist_keras(y_true, y_pred):
 def step_decay(epochs):
     initial_lrate = 0.05
     drop = 0.5
-    epochs_drop = 10
+    epochs_drop = 25
     lrate = initial_lrate * math.pow(drop, math.floor((1+epochs)/epochs_drop))
 
     lrate = max(float('3.3e-5'), lrate)
@@ -182,6 +182,7 @@ def train_3d():
                   metrics=['mae'])
     lrate = LearningRateScheduler(step_decay)
     model.summary()
+    model.load_weights("model_data/3d_weights-1076.7221.hdf5")
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 4, True),
                                  steps_per_epoch=8959,
                                  callbacks=[ckpt, lrate],
