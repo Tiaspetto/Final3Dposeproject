@@ -93,7 +93,7 @@ def euc_dist_keras(y_true, y_pred):
 
 
 def step_decay(epochs):
-    initial_lrate = 0.025
+    initial_lrate = 0.0001
     drop = 0.5
     epochs_drop = 8
     lrate = initial_lrate * math.pow(drop, math.floor((1+epochs)/epochs_drop))
