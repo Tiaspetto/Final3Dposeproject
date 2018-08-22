@@ -177,12 +177,13 @@ def train_3d():
 
     model, stride = resnet50_32s(input_shape=(
         224, 224, 3), model_input="model_data/weights-0.0685.hdf5")
-    adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
-    model.compile(optimizer=adadelta, loss=euc_dist_keras,
+    #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
+    adam = optimizers.adam(lr=float("1e-4"))
+    model.compile(optimizer=adam, loss=euc_dist_keras,
                   metrics=['mae'])
     lrate = LearningRateScheduler(step_decay)
     model.summary()
-    model.load_weights("model_data/3d_weights-1076.7221.hdf5")
+    model.load_weights("model_data/3d_weights-1076.6436.hdf5")
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 4, True),
                                  steps_per_epoch=8959,
                                  callbacks=[ckpt, lrate],
