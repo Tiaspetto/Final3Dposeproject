@@ -183,7 +183,7 @@ def train_3d():
                   metrics=['mae'])
     lrate = LearningRateScheduler(step_decay)
     model.summary()
-    model.load_weights("model_data/3d_weights-1076.6436.hdf5")
+    #model.load_weights("model_data/3d_weights-1076.6436.hdf5")
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 4, True),
                                  steps_per_epoch=8959,
                                  callbacks=[ckpt, lrate],
