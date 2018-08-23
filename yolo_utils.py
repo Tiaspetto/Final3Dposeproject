@@ -49,7 +49,7 @@ def preprocess_image(img_path, model_image_size):
 
 def draw_boxes(image, out_scores, out_boxes, out_classes, class_names, colors):
     
-    font = ImageFont.truetype(font='font/Arial.ttf',size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
+    font = ImageFont.truetype(font='font/simsun.ttc',size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
     thickness = (image.size[0] + image.size[1]) // 300
 
     for i, c in reversed(list(enumerate(out_classes))):
@@ -80,3 +80,24 @@ def draw_boxes(image, out_scores, out_boxes, out_classes, class_names, colors):
         draw.rectangle([tuple(text_origin), tuple(text_origin + label_size)], fill=colors[c])
         draw.text(text_origin, label, fill=(0, 0, 0), font=font)
         del draw
+
+def clip_boxes(image, out_scores, out_boxes, out_classes, class_names):
+    for i, c in reversed(list(enumerate(out_classes))):
+        predicted_class = class_names[c]
+        if predicted_class == "person":
+
+            box = out_boxes[i]
+            score = out_scores[i]
+
+            label = '{} {:.2f}'.format(predicted_class, score)
+
+            top, left, bottom, right = box
+            top = max(0, np.floor(top - 15.5).astype('int32'))
+            left = max(0, np.floor(left - 15.5).astype('int32'))
+            bottom = min(image.size[1], np.floor(bottom + 15.5).astype('int32'))
+            right = min(image.size[0], np.floor(right + 15.5).astype('int32'))
+            print(label, (left, top), (right, bottom))
+            return (top, bottom, left, right)
+    
+
+    return (0, 0, 0, 0)

@@ -11,9 +11,10 @@ import tensorflow as tf
 from keras import backend as K
 from keras.layers import Input, Lambda, Conv2D
 from keras.models import load_model, Model
-from yolo_utils import read_classes, read_anchors, generate_colors, preprocess_image, draw_boxes, scale_boxes
+from yolo_utils import read_classes, read_anchors, generate_colors, preprocess_image, draw_boxes, scale_boxes, clip_boxes
 from yad2k.models.keras_yolo import yolo_head, yolo_boxes_to_corners, preprocess_true_boxes, yolo_loss, yolo_body
-
+from data.data_scripts.data_utils import *
+import cv2
 
 # GRADED FUNCTION: yolo_non_max_suppression
 
@@ -162,7 +163,7 @@ def predict(sess, scores, boxes, out_classes, image_file):
     """
 
     # Preprocess your image
-    image, image_data = preprocess_image("images/" + image_file, model_image_size = (608, 608))
+    image, image_data = preprocess_image(image_file, model_image_size = (608, 608))
 
     # Run the session with the correct tensors and choose the correct placeholders in the feed_dict.
     # You'll need to use feed_dict={yolo_model.input: ... , K.learning_phase(): 0})
@@ -175,27 +176,45 @@ def predict(sess, scores, boxes, out_classes, image_file):
     # Generate colors for drawing bounding boxes.
     colors = generate_colors(class_names)
     # Draw bounding boxes on the image file
-    draw_boxes(image, out_scores, out_boxes, out_classes, class_names, colors)
+    if len(out_boxes) == 0:
+        return (0, 0, 0, 0)
+    else:
+        top, bottom, left, right  = clip_boxes(image, out_scores, out_boxes, out_classes, class_names)
     # Save the predicted bounding box on the image
-    image.save(os.path.join("out", image_file), quality=90)
+    return (top, bottom, left, right)
 
     
     return out_scores, out_boxes, out_classes
 if __name__ == "__main__":
     class_names = read_classes("model_data/coco_classes.txt")
     anchors = read_anchors("model_data/yolo_anchors.txt")
-    image_shape = (1980., 2835.)
-
     yolo_model = load_model("model_data/yolo.h5")
     yolo_model.summary()
 
     sess = K.get_session()
 
     yolo_outputs = yolo_head(yolo_model.output, anchors, len(class_names))
-    scores, boxes, classes = yolo_eval(yolo_outputs, image_shape)
+    train_array = list(range(0,19313))
 
-    out_scores, out_boxes, out_classes = predict(sess, scores, boxes, classes, "test3.jpg")
-    output_image = scipy.misc.imread(os.path.join("out", "test3.jpg"))
-    imshow(output_image)
-    plt.show()
+    #val_array = list(range(1, 19313))
 
+
+    for index in train_array:
+        img_path = "{root_path}{data_path}IMG/{pid}.jpg"
+        img_path = img_path.format(root_path = os.path.abspath('.'), data_path = "/data/ECCV18_Challenge/Val/", pid  = str(index).zfill(5))
+        print(img_path)
+        img = cv2.imread(img_path)
+        #height, width, _ = img.shape
+        image_shape = (1000., 1000.)
+        print(np.shape(img))
+        scores, boxes, classes = yolo_eval(yolo_outputs, image_shape)
+        top, bottom, left, right = predict(sess, scores, boxes, classes, img_path)
+        if (top, bottom, left, right) != (0, 0, 0, 0):
+            cropped = img[top:bottom, left:right]
+            img_name = "out/val/{pid}.jpg"
+            cv2.imwrite(img_name.format(pid = str(index).zfill(5)), cropped)
+        else:
+            f=open('no_bbox.txt','a')
+            text = str(index).zfill(5) + ","
+            f.writelines(text)
+            f.close()
