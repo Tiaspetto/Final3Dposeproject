@@ -11,3 +11,4 @@
 *.csv
 *.json
 *.hdf5
+/no_bbox.txt
