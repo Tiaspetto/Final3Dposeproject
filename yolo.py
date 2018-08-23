@@ -186,6 +186,7 @@ def predict(sess, scores, boxes, out_classes, image_file):
     
     return out_scores, out_boxes, out_classes
 if __name__ == "__main__":
+    print("wtf")
     class_names = read_classes("model_data/coco_classes.txt")
     anchors = read_anchors("model_data/yolo_anchors.txt")
     yolo_model = load_model("model_data/yolo.h5")
