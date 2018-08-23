@@ -214,7 +214,7 @@ if __name__ == "__main__":
             img_name = "out/val/{pid}.jpg"
             cv2.imwrite(img_name.format(pid = str(index).zfill(5)), cropped)
         else:
-            f=open('no_bbox.txt','a')
+            f=open('no_val_bbox.txt','a')
             text = str(index).zfill(5) + ","
             f.writelines(text)
             f.close()
