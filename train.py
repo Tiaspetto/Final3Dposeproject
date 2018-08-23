@@ -184,7 +184,7 @@ def train_3d():
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-4"), step_size = 2240, mode 'triangular')
     model.summary()
-    model.load_weights("model_data/3d_weights-1077.5954.hdf5")
+    model.load_weights("model_data/3d_weights-1077.0956.hdf5")
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=4480,
                                  callbacks=[ckpt, clr],
