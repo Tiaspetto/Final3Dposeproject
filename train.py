@@ -5,6 +5,7 @@ from keras.models import Model, load_model
 from keras import backend as K
 from keras import optimizers
 from keras.callbacks import LearningRateScheduler
+from cyclical_learning_rate import CyclicLR
 import random
 import tensorflow as tf
 import cv2
@@ -180,12 +181,13 @@ def train_3d():
     adam = optimizers.adam(lr=float("1e-4"))
     model.compile(optimizer=adam, loss=euc_dist_keras,
                   metrics=['mae'])
-    lrate = LearningRateScheduler(step_decay)
+    #lrate = LearningRateScheduler(step_decay)
+    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-4"), step_size = 2240, mode 'triangular')
     model.summary()
     model.load_weights("model_data/3d_weights-1077.5954.hdf5")
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=4480,
-                                 callbacks=[ckpt, lrate],
+                                 callbacks=[ckpt, clr],
                                  epochs=60000, verbose=1,
                                  validation_data=pose3d_get_train_batch(val_array, 8, False),
                                  validation_steps=2415,
