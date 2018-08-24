@@ -16,6 +16,7 @@ from yolo_utils import read_classes, read_anchors, generate_colors, preprocess_i
 from yad2k.models.keras_yolo import yolo_head, yolo_boxes_to_corners, preprocess_true_boxes, yolo_loss, yolo_body
 from data.data_scripts.data_utils import *
 import cv2
+import gc
 
 # GRADED FUNCTION: yolo_non_max_suppression
 
@@ -174,18 +175,16 @@ def predict(sess, scores, boxes, out_classes, image_file):
 
     # Print predictions info
     print('Found {} boxes for {}'.format(len(out_boxes), image_file))
-    # Generate colors for drawing bounding boxes.
-    colors = generate_colors(class_names)
     # Draw bounding boxes on the image file
     if len(out_boxes) == 0:
         return (0, 0, 0, 0)
     else:
         top, bottom, left, right  = clip_boxes(image, out_scores, out_boxes, out_classes, class_names)
+    
+    del image, image_data, out_scores, out_boxes, out_classes
     # Save the predicted bounding box on the image
     return (top, bottom, left, right)
 
-    
-    return out_scores, out_boxes, out_classes
 if __name__ == "__main__":
     print("wtf")
     class_names = read_classes("model_data/coco_classes.txt")
@@ -196,27 +195,30 @@ if __name__ == "__main__":
     sess = K.get_session()
 
     yolo_outputs = yolo_head(yolo_model.output, anchors, len(class_names))
-    train_array = list(range(0,19313))
-
-    #val_array = list(range(1, 19313))
+    train_array = list(range(8410,35833))
+    image_shape = (1000., 1000.)
+    val_array = list(range(1, 19313))
 
 
     for index in train_array:
         img_path = "{root_path}{data_path}IMG/{pid}.jpg"
-        img_path = img_path.format(root_path = os.path.abspath('.'), data_path = "/data/ECCV18_Challenge/Val/", pid  = str(index).zfill(5))
+        img_path = img_path.format(root_path = os.path.abspath('.'), data_path = "/data/ECCV18_Challenge/Train/", pid  = str(index).zfill(5))
         print(img_path)
         img = cv2.imread(img_path)
         #height, width, _ = img.shape
-        image_shape = (1000., 1000.)
         print(np.shape(img))
         scores, boxes, classes = yolo_eval(yolo_outputs, image_shape)
         top, bottom, left, right = predict(sess, scores, boxes, classes, img_path)
         if (top, bottom, left, right) != (0, 0, 0, 0):
             cropped = img[top:bottom, left:right]
-            img_name = "out/val/{pid}.jpg"
+            img_name = "out/train/{pid}.jpg"
             cv2.imwrite(img_name.format(pid = str(index).zfill(5)), cropped)
+            del img, cropped, scores, boxes, classes, top, bottom, left, right, img_name, img_path
         else:
-            f=open('no_val_bbox.txt','a')
+            f=open('no_bbox.txt','a')
             text = str(index).zfill(5) + ","
             f.writelines(text)
             f.close()
+            del img, scores, boxes, classes, top, bottom, left, right, img_path, text
+        #K.clear_session()
+        gc.collect()
