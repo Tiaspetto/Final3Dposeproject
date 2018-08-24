@@ -177,7 +177,7 @@ def feature_train_2d():
 
 def train_3d():
     train_skip, val_skip = read_skip()
-    train_array = list(range(1, 8613)) 
+    train_array = list(range(1, 9422)) 
     train_array = [i for i in train_array if i not in train_skip]
     train_array = shuffle(train_array)
 
@@ -203,7 +203,7 @@ def train_3d():
     model.summary()
     #model.load_weights("model_data/3d_weights-1077.0956.hdf5")
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
-                                 steps_per_epoch=1077,
+                                 steps_per_epoch=1178,
                                  callbacks=[ckpt, clr],
                                  epochs=60000, verbose=1,
                                  validation_data=pose3d_get_train_batch(val_array, 8, False),
