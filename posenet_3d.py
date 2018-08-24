@@ -70,7 +70,7 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     # output layer
     X = Flatten()(X)
     X = Dense(1024, activation='linear', name='fc_'  + str('pred_32s_1024'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = LeakyReLU(alpha=.001)(X)
+    X = Activation('tanh')(X)
     X = Dense(42, activation='linear', name='fc_'  + str('pred_32s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     model = Model(input=base_model.input,output=X)
@@ -144,7 +144,7 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
     X = Flatten()(X)
     
     X = Dense(1024, activation='linear', name='fc_'  + str('pred_16s_1024'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = LeakyReLU(alpha=.001)(X)
+    X = Activation('tanh')(X)
     X = Dense(42, activation='linear', name='fc_'  + str('pred_16s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     model = Model(input=base_model.input,output=X)
@@ -226,7 +226,7 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     # output layer
     X = Flatten()(X)
     X = Dense(1024, activation='linear', name='fc_'  + str('pred_8s_1024'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = LeakyReLU(alpha=.001)(X)
+    X = Activation('tanh')(X)
     X = Dense(42, activation='linear', name='fc_'  + str('pred_8s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     model = Model(input=base_model.input,output=X)

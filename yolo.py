@@ -195,7 +195,7 @@ if __name__ == "__main__":
     sess = K.get_session()
 
     yolo_outputs = yolo_head(yolo_model.output, anchors, len(class_names))
-    train_array = list(range(9422,35833))
+    train_array = list(range(10566,35833))
     image_shape = (1000., 1000.)
     val_array = list(range(1, 19313))
 
