@@ -8,6 +8,7 @@ import random
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 def euc_dist_keras(y_true, y_pred):
 	return K.sqrt(K.sum(K.square(y_true - y_pred), axis = -1, keepdims = True))
@@ -29,4 +30,24 @@ if __name__ == '__main__':
     #     plt.subplot(4,4,i+1)
     #     imshow(result[i])
     # plt.show()
-    get_MPII_data(True)
+    #get_MPII_data(True)
+    #train_array = list(range(1, 9422)) 
+    #for index in train_array:
+        #img_path = "{root_path}{data_path}{pid}.jpg"
+        #img_path = img_path.format(root_path = os.path.abspath('.'), data_path = "/data/ECCV18_Preprocessed/train/", pid  = str(index).zfill(5))
+        #if not os.path.isfile(img_path):
+            #print(img_path)
+            #f=open('no_bbox.txt','a')
+            #text = str(index).zfill(5) + ","
+            #f.writelines(text)
+            #f.close()
+    val_array = list(range(1, 1001)) 
+    for index in val_array:
+        img_path = "{root_path}{data_path}{pid}.jpg"
+        img_path = img_path.format(root_path = os.path.abspath('.'), data_path = "/data/ECCV18_Preprocessed/val/", pid  = str(index).zfill(5))
+        if not os.path.isfile(img_path):
+            print(img_path)
+            f=open('no_val_bbox.txt','a')
+            text = str(index).zfill(5) + ","
+            f.writelines(text)
+            f.close()
