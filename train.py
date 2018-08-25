@@ -96,7 +96,7 @@ def euc_joint_dist_keras(y_true, y_pred):
     y_pred = K.reshape(y_pred, [None, 14,3])
     y_true = K.reshape(y_true, [None, 14,3])
 
-    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=1)))
+    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)))
     return loss
 
 def step_decay(epochs):
