@@ -193,6 +193,7 @@ def read_pose_data(picid, isTrain):
             index += 1
 
         data =np.array(data)
+        data = np.reshape(data, (42, ))
 
     #print(data)
     return(data)
