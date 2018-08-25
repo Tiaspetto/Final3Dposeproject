@@ -89,7 +89,10 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
                     'bn5a_branch2b', 
                     'res5a_branch2b',
                     'bn5a_branch2a', 
-                    'res5a_branch2a']
+                    'res5a_branch2a',
+                    'res5b_branch2a',
+                    'bn5b_branch2a',
+                    ]
 
     for l in model.layers:
         if l.name in train_layers:
