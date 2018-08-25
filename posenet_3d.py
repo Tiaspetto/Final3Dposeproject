@@ -75,30 +75,44 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     
     model = Model(input=base_model.input,output=X)
     
-    # fine-tune 
-    train_layers = ['pred_32',
-                    'pred_32s_feature1',
-                    'pred_32s_feature2',
-                    'pred_32s_p1',
-                    'pred_32s',
-                    'fc_pred_32s_1024',
-                    'fc_pred_32s',
+    # # fine-tune 
+    # train_layers = ['pred_32',
+    #                 'pred_32s_feature1',
+    #                 'pred_32s_feature2',
+    #                 'pred_32s_p1',
+    #                 'pred_32s',
+    #                 'fc_pred_32s_1024',
+    #                 'fc_pred_32s',
 
-                    'bn5a_branch2c', 
-                    'res5a_branch2c',
-                    'bn5a_branch2b', 
-                    'res5a_branch2b',
-                    'bn5a_branch2a', 
-                    'res5a_branch2a',
-                    'res5b_branch2a',
-                    'bn5b_branch2a',
-                    ]
+    #                 'bn4b_branch2c', 
+    #                 'res4b_branch2c',
+    #                 'bn4b_branch2b', 
+    #                 'res4b_branch2b',
+    #                 'bn4b_branch2a', 
+    #                 'res4b_branch2a'
 
-    for l in model.layers:
-        if l.name in train_layers:
-            l.trainable = True
-        else :
-            l.trainable = False
+    #                 'bn4c_branch2c', 
+    #                 'res4c_branch2c',
+    #                 'bn4c_branch2b', 
+    #                 'res4c_branch2b',
+    #                 'bn4c_branch2a', 
+    #                 'res4c_branch2a'
+
+    #                 'bn5a_branch2c', 
+    #                 'res5a_branch2c',
+    #                 'bn5a_branch2b', 
+    #                 'res5a_branch2b',
+    #                 'bn5a_branch2a', 
+    #                 'res5a_branch2a',
+    #                 'res5b_branch2a',
+    #                 'bn5b_branch2a',
+    #                 ]
+
+    # for l in model.layers:
+    #     if l.name in train_layers:
+    #         l.trainable = True
+    #     else :
+    #         l.trainable = False
 
     return model, stride
 
@@ -114,16 +128,16 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
     X = Conv2D(14, (1, 1), name = 'pred_16', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = UpSampling2D(name='upsampling_16', size = (int(stride/2), int(stride/2)))(X)
     X = Conv2D(256, (3, 3), strides = (1, 1), name = 'pred_16s_feature1', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = LeakyReLU(alpha=.001)(X)
+    X = Activation('tanh')(X)
 
     X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_16s_feature2', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = LeakyReLU(alpha=.001)(X)
+    X = Activation('tanh')(X)
 
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_16s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = LeakyReLU(alpha=.001)(X)
+    X = Activation('tanh')(X)
 
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_16s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = LeakyReLU(alpha=.001)(X)
+    X = Activation('tanh')(X)
     # merge classifiers
     X = merge([X, base_model.get_layer('pred_32s').output],mode = 'sum')
     
@@ -175,8 +189,10 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
                     'bn5a_branch2b', 
                     'res5a_branch2b',
                     'bn5a_branch2a', 
-                    'res5a_branch2a']
-
+                    'res5a_branch2a',
+                    'res5b_branch2a',
+                    'bn5b_branch2a',
+                    ]
 
     for l in model.layers:
         if l.name in train_layers:
@@ -198,16 +214,16 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     X = Conv2D(14, (1, 1), name = 'pred_8', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = UpSampling2D(name='upsampling_8',size=(int(stride/4), int(stride/4)))(X)
     X = Conv2D(256, (3, 3), strides = (1, 1), name = 'pred_8s_feature1', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = LeakyReLU(alpha=.001)(X)
+    X = Activation('tanh')(X)
 
     X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_8s_feature2', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = LeakyReLU(alpha=.001)(X)
+    X = Activation('tanh')(X)
 
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_8s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = LeakyReLU(alpha=.001)(X)
+    X = Activation('tanh')(X)
 
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_8s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = LeakyReLU(alpha=.001)(X)
+    X = Activation('tanh')(X)
 
     # merge classifiers
     X = merge([X, base_model.get_layer('pred_16s').output],mode = 'sum')
@@ -261,7 +277,10 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
                     'bn5a_branch2b', 
                     'res5a_branch2b',
                     'bn5a_branch2a', 
-                    'res5a_branch2a']
+                    'res5a_branch2a',
+                    'res5b_branch2a',
+                    'bn5b_branch2a',
+                    ]
 
 
     for l in model.layers:
