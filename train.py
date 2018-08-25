@@ -95,7 +95,9 @@ def euc_dist_keras(y_true, y_pred):
 def euc_joint_dist_keras(y_true, y_pred):
     y_true = K.reshape(y_true, [14, 3])
     y_pred = K.reshape(y_pred, [14, 3])
-    return K.sqrt(K.sum(K.square(y_true - y_pred), axis=-1, keepdims=True))
+    loss = K.sqrt(K.sum(K.square(y_true - y_pred), axis=-1, keepdims=True))
+    print("loss", loss)
+    return loss
 
 def step_decay(epochs):
     initial_lrate = float('1.65e-5')
