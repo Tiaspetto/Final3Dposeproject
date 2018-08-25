@@ -49,29 +49,29 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     
     #add predictor
     X = base_model.get_layer('leaky_re_lu_4').output
-    X = Conv2D(42, (1, 1), name = 'pred_32', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(42, (1, 1), name = 'pred_32', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     # add upsampler
     stride = 4
     X = UpSampling2D(size = (int(stride), int(stride)))(X)
 
-    X = Conv2D(256, (3, 3), strides = (1, 1), name = 'pred_32s_feature1', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(256, (3, 3), strides = (1, 1), name = 'pred_32s_feature1', padding = 'same', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = Activation('tanh')(X)
 
-    X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_32s_feature2', padding = 'same', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_32s_feature2', padding = 'same', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = Activation('tanh')(X)
 
-    X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_32s_p1', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_32s_p1', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = Activation('tanh')(X)
     
-    X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_32s', padding = 'valid', kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_32s', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = Activation('tanh')(X)
 
     # output layer
     X = Flatten()(X)
-    X = Dense(1024, activation='linear', name='fc_'  + str('pred_32s_1024'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Dense(1024, activation='linear', name='fc_'  + str('pred_32s_1024'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = Activation('tanh')(X)
-    X = Dense(42, activation='linear', name='fc_'  + str('pred_32s'), kernel_initializer = glorot_uniform(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Dense(42, activation='linear', name='fc_'  + str('pred_32s'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     model = Model(input=base_model.input,output=X)
     
