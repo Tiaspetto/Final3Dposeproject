@@ -10,6 +10,7 @@ from keras.layers.core import Activation
 from keras.applications.resnet50 import ResNet50
 from keras.models import Model, load_model
 from posenet_2d import *
+from keras.initializers import glorot_normal
 
 
 import numpy as np
