@@ -92,6 +92,10 @@ def shuffle(index_array):
 def euc_dist_keras(y_true, y_pred):
     return K.sqrt(K.sum(K.square(y_true - y_pred), axis=-1, keepdims=True))
 
+def euc_joint_dist_keras(y_true, y_pred):
+    y_true = np.reshape(y_true, (14, 3))
+    y_pred = np.reshape(y_pred, (14, 3))
+    return K.sqrt(K.sum(K.square(y_true - y_pred), axis=-1, keepdims=True))
 
 def step_decay(epochs):
     initial_lrate = float('1.65e-5')
@@ -196,7 +200,7 @@ def train_3d():
         224, 224, 3), model_input="model_data/weights-0.0685.hdf5")
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
-    model.compile(optimizer=adam, loss=euc_dist_keras,
+    model.compile(optimizer=adam, loss=euc_joint_dist_keras,
                   metrics=['mae'])
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-4"), step_size = 1178, mode = 'triangular')
