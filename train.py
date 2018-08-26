@@ -211,7 +211,7 @@ def train_3d():
         224, 224, 3), model_input="model_data/weights-0.0685.hdf5")
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
-    model.compile(optimizer=adam, loss=euc_joint_dist_keras,
+    model.compile(optimizer=adam, loss=euc_joint_dist_metrics,
                   metrics= ['euc_metrics', euc_joint_metrics_dist_keras])
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 1706, mode = 'triangular')
