@@ -92,13 +92,20 @@ def shuffle(index_array):
 def euc_dist_keras(y_true, y_pred):
     return K.sqrt(K.sum(K.square(y_true - y_pred), axis=-1, keepdims=True))
 
-def euc_joint_dist_keras(y_true, y_pred):
+def euc_joint_metrics_dist_keras(y_true, y_pred):
+    y_pred = K.reshape(y_pred, [-1, 14, 3])
+    y_true = K.reshape(y_true, [-1, 14, 3])
+    y_pred = y_pred * 800.0
+    y_true = y_true * 800.0
+    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)))
+    return loss
+
+def euc_joint_dist_metrics(y_true, y_pred):
     y_pred = K.reshape(y_pred, [-1, 14, 3])
     y_true = K.reshape(y_true, [-1, 14, 3])
 
     loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)))
     return loss
-
 def step_decay(epochs):
     initial_lrate = float('0.05')
     drop = 0.5
@@ -205,11 +212,11 @@ def train_3d():
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
     model.compile(optimizer=adam, loss=euc_joint_dist_keras,
-                  metrics=['mae'])
+                  metrics= ['euc_metrics', euc_joint_metrics_dist_keras])
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 1706, mode = 'triangular')
     model.summary()
-    model.load_weights("model_data/3d_weights-238.4385.hdf5")
+    #model.load_weights("model_data/3d_weights-238.4385.hdf5")
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=1706,
                                  callbacks=[ckpt, clr],

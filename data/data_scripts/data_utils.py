@@ -195,6 +195,7 @@ def read_pose_data(picid, isTrain):
 
         data =np.array(data)
         data = np.reshape(data, (42, ))
+        data = data / 800.0
 
     #print(data)
     return(data)
