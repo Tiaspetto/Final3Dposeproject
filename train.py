@@ -97,14 +97,14 @@ def euc_joint_metrics_dist_keras(y_true, y_pred):
     y_true = K.reshape(y_true, [-1, 14, 3])
     y_pred = y_pred * 1000.0
     y_true = y_true * 1000.0
-    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)))
+    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
     return loss
 
 def euc_joint_dist_metrics(y_true, y_pred):
     y_pred = K.reshape(y_pred, [-1, 14, 3])
     y_true = K.reshape(y_true, [-1, 14, 3])
 
-    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)))
+    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
     return loss
 def step_decay(epochs):
     initial_lrate = float('0.05')
