@@ -100,7 +100,7 @@ def euc_joint_dist_keras(y_true, y_pred):
     return loss
 
 def step_decay(epochs):
-    initial_lrate = float('1.65e-5')
+    initial_lrate = float('0.05')
     drop = 0.5
     epochs_drop = 8
     lrate = initial_lrate * math.pow(drop, math.floor((1+epochs)/epochs_drop))
@@ -139,12 +139,13 @@ def train_2d():
 
     model = PoseNet_50(input_shape=(224, 224, 3))
     adadelta = optimizers.Adadelta(lr = 0.05, rho = 0.9, decay = 0.0)
+    clr = CyclicLR(base_lr = float("3.3e-4"), max_lr = 0.05, step_size = 1706, mode = 'triangular')
     model.compile(optimizer = adadelta, loss = euc_dist_keras,
                   metrics=['mae'])
-    lrate = LearningRateScheduler(step_decay)
+    #lrate = LearningRateScheduler(step_decay)
     result = model.fit_generator(generator=pose2d_get_train_batch(index_array, 8),
                                  steps_per_epoch=238,
-                                 callbacks=[ckpt, lrate],
+                                 callbacks=[ckpt, clr],
                                  epochs=60000, verbose=1,
                                  validation_data=pose2d_get_train_batch(validation_array, 8),
                                  validation_steps=52,
@@ -172,10 +173,11 @@ def feature_train_2d():
     model.load_weights("model_data/weights-0.0753.hdf5")
     model.compile(optimizer = adadelta, loss = euc_dist_keras,
                   metrics=['mae'])
-    lrate = LearningRateScheduler(step_decay)
+    #lrate = LearningRateScheduler(step_decay)
+    clr = CyclicLR(base_lr = float("3.3e-4"), max_lr = 0.05, step_size = 1706, mode = 'triangular')
     result = model.fit_generator(generator=pose2d_get_further_train_batch(train_array, 8, True),
                                  steps_per_epoch=2241,
-                                 callbacks=[ckpt, lrate],
+                                 callbacks=[ckpt, clr],
                                  epochs=60000, verbose=1,
                                  validation_data=pose2d_get_further_train_batch(validation_array, 8, False),
                                  validation_steps=249,
