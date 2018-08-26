@@ -11,29 +11,29 @@ def main(argv):
    try:
       opts, args = getopt.getopt(argv,"hp:")
    except getopt.GetoptError:
-      print 'USAGE: validate.py -p <predfolder>'
+      print('USAGE: validate.py -p <predfolder>')
       sys.exit(2)
    for opt, arg in opts:
       if opt == '-h':
-         print 'USAGE: validate.py -p <predfolder>'
+         print('USAGE: validate.py -p <predfolder>')
          sys.exit()
       elif opt in ("-p"):
          predfolder = arg
 
    if not predfolder:
-	print 'USAGE: validate.py -p <predfolder>'
+	print('USAGE: validate.py -p <predfolder>')
         sys.exit()
 
    gtfolder = os.path.abspath(os.path.join(os.path.dirname( predfolder ), 'POSE'))
 
-   print 'Getting results from ', predfolder
-   print 'Using validation GT from', gtfolder
+   print('Getting results from ', predfolder)
+   print('Using validation GT from', gtfolder)
    
    if not os.path.isdir(predfolder):
-	print 'ERROR! ', predfolder,' is not a valid location'
+	print('ERROR! ', predfolder,' is not a valid location')
         sys.exit()
    if not os.path.isdir(gtfolder):
-	print 'ERROR! ', gtfolder,' is not a valid location'
+	print('ERROR! ', gtfolder,' is not a valid location')
         sys.exit()
 
    
@@ -46,9 +46,9 @@ def main(argv):
 		predPose = genfromtxt(predfile, delimiter=',')
 		error[i] = np.mean(np.sqrt(np.sum((gtPose - predPose) ** 2, axis = 1)))
 	except Exception as err:
-		print type(err)
-		print err.args
-		print err
+		print(type(err))
+		print(err.args)
+		print (err)
 		sys.exit(2)
 
    print '=========> THE ERROR FOR THE VALIDATION SET IS %.3f MM' % np.mean(error)

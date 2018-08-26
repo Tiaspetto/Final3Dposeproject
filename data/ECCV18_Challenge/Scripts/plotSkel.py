@@ -11,9 +11,10 @@ def main(argv):
 
 	csvfile = argv[0];
 
+	print(csvfile)
 	if not os.path.isfile(csvfile):
-		print 'ERROR! ', csvfile,' is not a valid file location'
-	        sys.exit()
+		print('ERROR! ', csvfile,' is not a valid file location')
+		sys.exit()
 
 	try:
 		pose3D = genfromtxt(csvfile, delimiter=',')
@@ -58,9 +59,9 @@ def main(argv):
 		plt.show()
 
 	except Exception as err:
-		print type(err)
-		print err.args
-		print err
+		print(type(err))
+		print(err.args)
+		print(err)
 		sys.exit(2)
 
         
