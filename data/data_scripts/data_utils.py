@@ -158,7 +158,7 @@ def read_image(picid, dataset = "lsp", isTrain = True):
 
     img = cv2.resize(img, (224, 224), interpolation=cv2.INTER_LINEAR)
     
-    img = img * (2.0 / 255.0) — 1.0   
+    img = img * (2.0 / 255.0) - 1.0   
     #print(np.shape(img))
     return img
 
@@ -222,6 +222,7 @@ def MPI_read_img(file_name):
 
     height, width, _ = img.shape
     img = cv2.resize(img, (224, 224), interpolation=cv2.INTER_LINEAR)
+    img = img * (2.0 / 255.0) - 1.0
     return (img, height, width)
 
 def MPI_process_heat(data_array, height, width, file_name, isTrain):
