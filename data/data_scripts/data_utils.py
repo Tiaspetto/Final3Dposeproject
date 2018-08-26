@@ -190,13 +190,13 @@ def read_pose_data(picid, isTrain):
         index = 0
         for row in reader:
             if index in ECCV_joints:
-                
+                row = [float(x) for x in row]
                 data.append(row)
             index += 1
 
         data =np.array(data)
         data = np.reshape(data, (42, ))
-        #data = data * (1.0/800.0)
+        data = data * (1.0/800.0)
 
     print(data)
     return(data)
