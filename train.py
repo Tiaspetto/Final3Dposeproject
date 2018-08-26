@@ -95,8 +95,8 @@ def euc_dist_keras(y_true, y_pred):
 def euc_joint_metrics_dist_keras(y_true, y_pred):
     y_pred = K.reshape(y_pred, [-1, 14, 3])
     y_true = K.reshape(y_true, [-1, 14, 3])
-    y_pred = y_pred * 800.0
-    y_true = y_true * 800.0
+    y_pred = y_pred * 1000.0
+    y_true = y_true * 1000.0
     loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)))
     return loss
 
@@ -212,7 +212,7 @@ def train_3d():
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
     model.compile(optimizer=adam, loss=euc_joint_dist_metrics,
-                  metrics= ['euc_metrics', euc_joint_metrics_dist_keras])
+                  metrics= [euc_joint_metrics_dist_keras])
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 1706, mode = 'triangular')
     model.summary()
