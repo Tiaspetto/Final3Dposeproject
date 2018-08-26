@@ -225,6 +225,6 @@ def train_3d():
                                  validation_steps=125,
                                  workers=1)
 if __name__ == '__main__':
-    train_2d()
-    #train_3d()
+    #train_2d()
+    train_3d()
     #feature_train_2d()
