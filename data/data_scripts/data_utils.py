@@ -131,7 +131,7 @@ def pre_processing_lsp(file_name, picture_ids, target_size, debug_flag=False):
 
 def read_heat_info(picid):
     heat_path = "{root_path}{data_path}im{frames}.mat"
-    heat_path = heat_path.format(root_path = os.path.abspath('.'), heat_path = heatmap_path, frames=str(picid).zfill(4))
+    heat_path = heat_path.format(root_path = os.path.abspath('.'), data_path = heatmap_path, frames=str(picid).zfill(4))
     data = scipy.io.loadmat(heat_path)
     heat = data['heat']
     heat = heat.transpose((1, 2, 0))
