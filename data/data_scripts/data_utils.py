@@ -198,7 +198,7 @@ def read_pose_data(picid, isTrain):
         data = np.reshape(data, (42, ))
         data = data * (1.0/800.0)
 
-    print(data)
+    #print(data)
     return(data)
 
 def get_MPII_data(isTrain):
