@@ -98,12 +98,14 @@ def euc_joint_metrics_dist_keras(y_true, y_pred):
     y_true = K.reshape(y_true, [-1, 14, 3])
     y_pred = y_pred * 1000.0
     y_true = y_true * 1000.0
-    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
+    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axisx = 1)
     return loss
 
 def calc_parant(y_true, y_pred):
-    output_true = K.variable(K.zeros([-1, 14, 3]))
-    output_pred = K.variable(K.zeros([-1, 14, 3]))
+    tf_session = K.get_session()
+    shape = K.shape(y_true).eval(session = tf_session)
+    output_true = K.variable(K.zeros([shape[0], 14, 3]))
+    output_pred = K.variable(K.zeros([shape[0], 14, 3]))
     for i in range(0, 14):
         if joint_parents[i] != -1:
           output_true[:,i,:].assign(y_true[:, joint_parents[i], :] - y_true[:, i, :])
