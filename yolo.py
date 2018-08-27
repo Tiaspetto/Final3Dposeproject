@@ -195,14 +195,14 @@ if __name__ == "__main__":
     sess = K.get_session()
 
     yolo_outputs = yolo_head(yolo_model.output, anchors, len(class_names))
-    train_array = list(range(13641,35833))
+    #train_array = list(range(15455,35833))
     image_shape = (1000., 1000.)
-    val_array = list(range(1, 19313))
+    val_array = list(range(1769, 19313))
 
 
-    for index in train_array:
+    for index in val_array:
         img_path = "{root_path}{data_path}IMG/{pid}.jpg"
-        img_path = img_path.format(root_path = os.path.abspath('.'), data_path = "/data/ECCV18_Challenge/Train/", pid  = str(index).zfill(5))
+        img_path = img_path.format(root_path = os.path.abspath('.'), data_path = "/data/ECCV18_Challenge/Val/", pid  = str(index).zfill(5))
         print(img_path)
         img = cv2.imread(img_path)
         #height, width, _ = img.shape
@@ -211,14 +211,14 @@ if __name__ == "__main__":
         top, bottom, left, right = predict(sess, scores, boxes, classes, img_path)
         if (top, bottom, left, right) != (0, 0, 0, 0):
             cropped = img[top:bottom, left:right]
-            img_name = "out/train/{pid}.jpg"
+            img_name = "out/val/{pid}.jpg"
             cv2.imwrite(img_name.format(pid = str(index).zfill(5)), cropped)
             del img, cropped, scores, boxes, classes, top, bottom, left, right, img_name, img_path
-        else:
-            f=open('no_bbox.txt','a')
-            text = str(index).zfill(5) + ","
-            f.writelines(text)
-            f.close()
-            del img, scores, boxes, classes, top, bottom, left, right, img_path, text
+        # else:
+        #     f=open('no_bbox.txt','a')
+        #     text = str(index).zfill(5) + ","
+        #     f.writelines(text)
+        #     f.close()
+        #     del img, scores, boxes, classes, top, bottom, left, right, img_path, text
         #K.clear_session()
         gc.collect()
