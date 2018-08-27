@@ -261,6 +261,6 @@ def train_3d_16s():
                                  workers=1)
 if __name__ == '__main__':
     #train_2d()
-    #train_3d()
-    train_3d_16s()
+    train_3d()
+    #train_3d_16s()
     #feature_train_2d()
