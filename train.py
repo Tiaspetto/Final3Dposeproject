@@ -10,6 +10,7 @@ import random
 import tensorflow as tf
 import cv2
 
+joint_parents = [-1, 0, 1, -1, 3, 4, -1, 6, -1, 8, 9, -1, 11, 12]
 
 def pose2d_get_img_batch(batch_array):
     imgs = []
@@ -100,12 +101,31 @@ def euc_joint_metrics_dist_keras(y_true, y_pred):
     loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
     return loss
 
-def euc_joint_dist_metrics(y_true, y_pred):
+def calc_parant(y_true, y_pred):
+    for i in range(0, 14):
+        if joint_parents[i] != -1:
+          y_true[:, i, :] = y_true[:, joint_parents[i], :] - y_true[:, i, :]
+          y_pred[:, i, :] = y_pred[:, joint_parents[i], :] - y_pred[:, i, :]
+
+    return (y_true, y_pred)
+
+def calc_parent_loss1_loss2(py_true, py_pred):
+    inner_true = K.sqrt(K.sum(K.square(py_true), axis=2))
+    inner_pred = K.sqrt(K.sum(K.square(py_pred), axis=2))
+    loss1 = K.mean(K.square(inner_true - inner_pred)  ,axis = 1)
+    loss2 = K.mean(1-K.dot(py_true, py_pred)/K.dot(inner_true, inner_pred))
+    return (loss1, loss2)
+
+def euc_joint_dist_loss(y_true, y_pred):
     y_pred = K.reshape(y_pred, [-1, 14, 3])
     y_true = K.reshape(y_true, [-1, 14, 3])
-
+    
+    py_true, py_pred = calc_parant(y_true, y_pred)
+    
+    loss1, loss2 = calc_parent_loss1_loss2(py_true, py_pred)
     loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
-    return loss
+    return loss+30*loss1+5*loss2
+    
 def step_decay(epochs):
     initial_lrate = float('0.05')
     drop = 0.5
@@ -211,7 +231,7 @@ def train_3d():
         224, 224, 3), model_input="model_data/weights-0.0685.hdf5")
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
-    model.compile(optimizer=adam, loss=euc_joint_dist_metrics,
+    model.compile(optimizer=adam, loss=euc_joint_dist_loss,
                   metrics= [euc_joint_metrics_dist_keras])
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 1706, mode = 'triangular')
@@ -246,7 +266,7 @@ def train_3d_16s():
         224, 224, 3), model_input="model_data/3d_weights-0.1860.hdf5")
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
-    model.compile(optimizer=adam, loss=euc_joint_dist_metrics,
+    model.compile(optimizer=adam, loss=euc_joint_dist_loss,
                   metrics= [euc_joint_metrics_dist_keras])
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 1706, mode = 'triangular')
@@ -281,7 +301,7 @@ def train_3d_8s():
         224, 224, 3), model_input="model_data/3d_weights_16s-0.1750.hdf5")
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
-    model.compile(optimizer=adam, loss=euc_joint_dist_metrics,
+    model.compile(optimizer=adam, loss=euc_joint_dist_loss,
                   metrics= [euc_joint_metrics_dist_keras])
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
