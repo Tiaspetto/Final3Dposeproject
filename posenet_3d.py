@@ -3,7 +3,7 @@
 import keras.backend as K
 from keras.engine import Layer
 
-from keras.layers import Input, Dropout, merge, TimeDistributed
+from keras.layers import Input, Dropout, merge, TimeDistributed, ZeroPadding2D
 from keras.layers.convolutional import Convolution2D, UpSampling2D, ZeroPadding2D, Cropping2D, Deconvolution2D
 from keras.layers.core import Activation
 
@@ -214,6 +214,7 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     X = base_model.get_layer('activation_10').output
     X = Conv2D(42, (1, 1), name = 'pred_8', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = UpSampling2D(name='upsampling_8',size=(int(stride/4), int(stride/4)))(X)
+    X = ZeroPadding2D((1, 1))(X)
     X = Conv2D(256, (3, 3), strides = (1, 1), name = 'pred_8s_feature1', padding = 'same', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     # merge classifiers
@@ -232,7 +233,7 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
 
     
     # output layer
-    X = Flatten()(X)
+    X = Flatten()(X)val_arrayval_arrayval_array
     X = Dense(1024, activation='linear', name='fc_'  + str('pred_8s_1024'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = Activation('tanh')(X)
     X = Dense(42, activation='linear', name='fc_'  + str('pred_8s'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
