@@ -215,7 +215,7 @@ def feature_train_2d():
                                  validation_steps=249,
                                  workers=1)
 
-def train_3d(base_model = '', ckpt = ''):
+def train_3d(base_model = '', ckpt_model = ''):
     train_skip, val_skip = read_skip()
     train_array = list(range(1, 16545)) 
     train_array = [i for i in train_array if i not in train_skip]
@@ -241,8 +241,8 @@ def train_3d(base_model = '', ckpt = ''):
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
     model.summary()
-    if len(ckpt) > 1:
-        model.load_weights(ckpt)
+    if ckpt_model != '':
+        model.load_weights(ckpt_model)
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=2069,
                                  callbacks=[ckpt, clr],
@@ -251,7 +251,7 @@ def train_3d(base_model = '', ckpt = ''):
                                  validation_steps=253,
                                  workers=1)
 
-def train_3d_16s(base_model = '', ckpt = ''):
+def train_3d_16s(base_model = '', ckpt_model = ''):
     train_skip, val_skip = read_skip()
     train_array = list(range(1, 16545)) 
     train_array = [i for i in train_array if i not in train_skip]
@@ -277,8 +277,8 @@ def train_3d_16s(base_model = '', ckpt = ''):
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
     model.summary()
-    if len(ckpt) > 1:
-        model.load_weights(ckpt)
+    if ckpt_model != '':
+        model.load_weights(ckpt_model)
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=2069,
                                  callbacks=[ckpt, clr],
@@ -287,7 +287,7 @@ def train_3d_16s(base_model = '', ckpt = ''):
                                  validation_steps=253,
                                  workers=1)
 
-def train_3d_8s(base_model = '', ckpt = ''):
+def train_3d_8s(base_model = '', ckpt_model = ''):
     train_skip, val_skip = read_skip()
     train_array = list(range(1, 16545)) 
     train_array = [i for i in train_array if i not in train_skip]
@@ -314,8 +314,8 @@ def train_3d_8s(base_model = '', ckpt = ''):
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
     model.summary()
     print(ckpt)
-    if len(ckpt) > 1:
-        model.load_weights(ckpt)
+    if ckpt_model != '':
+        model.load_weights(ckpt_model)
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=2069,
                                  callbacks=[ckpt, clr],
