@@ -227,7 +227,7 @@ def train_3d():
 
 def train_3d_16s():
     train_skip, val_skip = read_skip()
-    train_array = list(range(1, 9422)) 
+    train_array = list(range(1, 13641)) 
     train_array = [i for i in train_array if i not in train_skip]
     train_array = shuffle(train_array)
 
@@ -246,14 +246,14 @@ def train_3d_16s():
         224, 224, 3), model_input="model_data/3d_weights-0.1860.hdf5")
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
-    model.compile(optimizer=adam, loss=euc_joint_dist_keras,
-                  metrics=['mae'])
+    model.compile(optimizer=adam, loss=euc_joint_dist_metrics,
+                  metrics= [euc_joint_metrics_dist_keras])
     #lrate = LearningRateScheduler(step_decay)
-    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-4"), step_size = 1178, mode = 'triangular')
+    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 1706, mode = 'triangular')
     model.summary()
-    #model.load_weights("model_data/3d_weights-1090.9096.hdf5")
+    #model.load_weights("model_data/3d_weights-238.4385.hdf5")
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
-                                 steps_per_epoch=1178,
+                                 steps_per_epoch=1706,
                                  callbacks=[ckpt, clr],
                                  epochs=60000, verbose=1,
                                  validation_data=pose3d_get_train_batch(val_array, 8, False),
