@@ -192,11 +192,11 @@ def feature_train_2d():
 
 def train_3d():
     train_skip, val_skip = read_skip()
-    train_array = list(range(1, 13641)) 
+    train_array = list(range(1, 16545)) 
     train_array = [i for i in train_array if i not in train_skip]
     train_array = shuffle(train_array)
 
-    val_array = list(range(1, 1001))
+    val_array = list(range(1, 2024))
     val_array = [i for i in val_array if i not in val_skip]
     val_array = shuffle(val_array)
 
@@ -227,11 +227,11 @@ def train_3d():
 
 def train_3d_16s():
     train_skip, val_skip = read_skip()
-    train_array = list(range(1, 13641)) 
+    train_array = list(range(1, 16545)) 
     train_array = [i for i in train_array if i not in train_skip]
     train_array = shuffle(train_array)
 
-    val_array = list(range(1, 1001))
+    val_array = list(range(1, 2024))
     val_array = [i for i in val_array if i not in val_skip]
     val_array = shuffle(val_array)
 
@@ -262,11 +262,11 @@ def train_3d_16s():
 
 def train_3d_8s():
     train_skip, val_skip = read_skip()
-    train_array = list(range(1, 13641)) 
+    train_array = list(range(1, 16545)) 
     train_array = [i for i in train_array if i not in train_skip]
     train_array = shuffle(train_array)
 
-    val_array = list(range(1, 1001))
+    val_array = list(range(1, 2024))
     val_array = [i for i in val_array if i not in val_skip]
     val_array = shuffle(val_array)
 
