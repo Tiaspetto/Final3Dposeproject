@@ -50,7 +50,7 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     
     #add predictor
     X = base_model.get_layer('leaky_re_lu_4').output
-    X = Conv2D(42, (1, 1), name = 'pred_32', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(256, (1, 1), name = 'pred_32', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     # add upsampler
     stride = 4
@@ -126,7 +126,7 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
     
     # add 16s classifier
     X = base_model.get_layer('activation_40').output
-    X = Conv2D(42, (1, 1), name = 'pred_16', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(256, (1, 1), name = 'pred_16', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = UpSampling2D(name='upsampling_16', size = (int(stride), int(stride)))(X)
     X = Conv2D(256, (3, 3), strides = (1, 1), name = 'pred_16s_feature1', padding = 'same', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
@@ -212,7 +212,7 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     
     # add 16s classifier
     X = base_model.get_layer('activation_22').output
-    X = Conv2D(42, (1, 1), name = 'pred_8', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Conv2D(256, (1, 1), name = 'pred_8', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = UpSampling2D(name='upsampling_8',size=(int(stride/2), int(stride/2)))(X)
     #X = ZeroPadding2D((1, 1))(X)
     X = Conv2D(256, (3, 3), strides = (1, 1), name = 'pred_8s_feature1', padding = 'same', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
