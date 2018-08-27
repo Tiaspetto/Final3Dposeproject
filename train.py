@@ -98,7 +98,7 @@ def euc_joint_metrics_dist_keras(y_true, y_pred):
     y_true = K.reshape(y_true, [-1, 14, 3])
     y_pred = y_pred * 1000.0
     y_true = y_true * 1000.0
-    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axisx = 1)
+    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
     return loss
 
 def calc_parant(y_true, y_pred):
