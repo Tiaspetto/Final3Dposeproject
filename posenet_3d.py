@@ -233,7 +233,7 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
 
     
     # output layer
-    X = Flatten()(X)val_arrayval_arrayval_array
+    X = Flatten()(X)
     X = Dense(1024, activation='linear', name='fc_'  + str('pred_8s_1024'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = Activation('tanh')(X)
     X = Dense(42, activation='linear', name='fc_'  + str('pred_8s'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
