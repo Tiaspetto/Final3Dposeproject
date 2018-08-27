@@ -267,13 +267,13 @@ def train_3d_16s():
                                               mode='min')
 
     model, stride = resnet50_16s(input_shape=(
-        224, 224, 3), model_input="model_data/3d_weights-0.1860.hdf5")
+        224, 224, 3), model_input="model_data/3d_weights-2.1806.hdf5")
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
     model.compile(optimizer=adam, loss=euc_joint_dist_loss,
                   metrics= [euc_joint_metrics_dist_keras])
     #lrate = LearningRateScheduler(step_decay)
-    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 1706, mode = 'triangular')
+    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
     model.summary()
     #model.load_weights("model_data/3d_weights-238.4385.hdf5")
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
@@ -320,8 +320,8 @@ def train_3d_8s():
                                  workers=1)
 if __name__ == '__main__':
     #train_2d()
-    train_3d()
-    #train_3d_16s()
+    #train_3d()
+    train_3d_16s()
     #feature_train_2d()
     #train_3d_8s()
     # y_pred = K.variable(K.zeros((8, 14, 3)))
