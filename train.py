@@ -253,11 +253,11 @@ def train_3d_16s():
     model.summary()
     #model.load_weights("model_data/3d_weights-238.4385.hdf5")
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
-                                 steps_per_epoch=1706,
+                                 steps_per_epoch=2069,
                                  callbacks=[ckpt, clr],
                                  epochs=60000, verbose=1,
                                  validation_data=pose3d_get_train_batch(val_array, 8, False),
-                                 validation_steps=125,
+                                 validation_steps=253,
                                  workers=1)
 
 def train_3d_8s():
@@ -284,15 +284,15 @@ def train_3d_8s():
     model.compile(optimizer=adam, loss=euc_joint_dist_metrics,
                   metrics= [euc_joint_metrics_dist_keras])
     #lrate = LearningRateScheduler(step_decay)
-    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 1706, mode = 'triangular')
+    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
     model.summary()
     #model.load_weights("model_data/3d_weights-238.4385.hdf5")
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
-                                 steps_per_epoch=1706,
+                                 steps_per_epoch=2069,
                                  callbacks=[ckpt, clr],
                                  epochs=60000, verbose=1,
                                  validation_data=pose3d_get_train_batch(val_array, 8, False),
-                                 validation_steps=125,
+                                 validation_steps=253,
                                  workers=1)
 if __name__ == '__main__':
     #train_2d()
