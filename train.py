@@ -102,15 +102,10 @@ def euc_joint_metrics_dist_keras(y_true, y_pred):
     return loss
 
 def calc_parant(y_true, y_pred):
-    for i in range(13, -1, -1):
-        if joint_parents[i] != -1:
-            y_true[:,i,:].assign(y_true[:, joint_parents[i], :] - y_true[:, i, :])
-            y_pred[:,i,:].assign(y_pred[:, joint_parents[i], :] - y_pred[:, i, :])
-        else:
-            y_true[:,i,:].assign(y_true[:, i, :])
-            y_pred[:,i,:].assign(y_pred[:, i, :])
+    py_true = K.concatenate([y_true[:,i,:] if joint_parents[i] == -1 else (y_true[:,i,:] - y_true[:,joint_parents[i],:] ) for i in range(0,14)])
+    py_pred = K.concatenate([y_pred[:,i,:] if joint_parents[i] == -1 else (y_pred[:,i,:] - y_pred[:,joint_parents[i],:] ) for i in range(0,14)])
 
-    return (y_true, y_pred)
+    return (K.reshape(py_true, [-1, 14, 3]), K.reshape(py_pred, [-1, 14, 3]))
 
 def calc_parent_loss1_loss2(py_true, py_pred):
     inner_true = K.sqrt(K.sum(K.square(py_true), axis=2))
@@ -130,7 +125,8 @@ def euc_joint_dist_loss(y_true, y_pred):
     
     loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
     py_true, py_pred = calc_parant(y_true, y_pred)
-    
+    # shape = K.int_shape(py_true)
+    # print(shape)
     loss1, loss2 = calc_parent_loss1_loss2(py_true, py_pred)
     return loss+30*loss1+5*loss2
 
@@ -327,7 +323,7 @@ if __name__ == '__main__':
     #train_3d()
     #train_3d_16s()
     #feature_train_2d()
-    train_3d_8s()
-    # y_pred = K.variable(K.zeros((8, 14, 3)))
-    # y_ture = K.variable(K.zeros((8, 14, 3)))
-    # result = euc_joint_dist_loss(y_pred, y_ture)
+    #train_3d_8s()
+    y_pred = K.variable(K.zeros((8, 14, 3)))
+    y_ture = K.variable(K.zeros((8, 14, 3)))
+    result = euc_joint_dist_loss(y_pred, y_ture)
