@@ -224,7 +224,43 @@ def train_3d():
                                  validation_data=pose3d_get_train_batch(val_array, 8, False),
                                  validation_steps=125,
                                  workers=1)
+
+def train_3d_16s():
+    train_skip, val_skip = read_skip()
+    train_array = list(range(1, 9422)) 
+    train_array = [i for i in train_array if i not in train_skip]
+    train_array = shuffle(train_array)
+
+    val_array = list(range(1, 1001))
+    val_array = [i for i in val_array if i not in val_skip]
+    val_array = shuffle(val_array)
+
+    ckpt_path = 'log/3d_weights-{val_loss:.4f}.hdf5'
+    ckpt = tf.keras.callbacks.ModelCheckpoint(ckpt_path,
+                                              monitor='val_loss',
+                                              verbose=1,
+                                              save_best_only=True,
+                                              mode='min')
+
+    model, stride = resnet50_16s(input_shape=(
+        224, 224, 3), model_input="model_data/3d_weights-0.1860.hdf5")
+    #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
+    adam = optimizers.adam(lr=float("1e-4"))
+    model.compile(optimizer=adam, loss=euc_joint_dist_keras,
+                  metrics=['mae'])
+    #lrate = LearningRateScheduler(step_decay)
+    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-4"), step_size = 1178, mode = 'triangular')
+    model.summary()
+    #model.load_weights("model_data/3d_weights-1090.9096.hdf5")
+    result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
+                                 steps_per_epoch=1178,
+                                 callbacks=[ckpt, clr],
+                                 epochs=60000, verbose=1,
+                                 validation_data=pose3d_get_train_batch(val_array, 8, False),
+                                 validation_steps=125,
+                                 workers=1)
 if __name__ == '__main__':
     #train_2d()
-    train_3d()
+    #train_3d()
+    train_3d_16s()
     #feature_train_2d()
