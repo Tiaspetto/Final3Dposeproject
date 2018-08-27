@@ -214,7 +214,7 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     X = base_model.get_layer('activation_22').output
     X = Conv2D(42, (1, 1), name = 'pred_8', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     X = UpSampling2D(name='upsampling_8',size=(int(stride/2), int(stride/2)))(X)
-    X = ZeroPadding2D((1, 1))(X)
+    #X = ZeroPadding2D((1, 1))(X)
     X = Conv2D(256, (3, 3), strides = (1, 1), name = 'pred_8s_feature1', padding = 'same', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     # merge classifiers
