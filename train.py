@@ -278,7 +278,7 @@ def train_3d_8s():
                                               mode='min')
 
     model, stride = resnet50_8s(input_shape=(
-        224, 224, 3), model_input="model_data/3d_weights_16s-20.2368.hdf5")
+        224, 224, 3), model_input="model_data/3d_weights_16s-0.2482.hdf5")
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
     model.compile(optimizer=adam, loss=euc_joint_dist_metrics,
@@ -297,6 +297,6 @@ def train_3d_8s():
 if __name__ == '__main__':
     #train_2d()
     #train_3d()
-    train_3d_16s()
+    #train_3d_16s()
     #feature_train_2d()
-    #train_3d_8s()
+    train_3d_8s()

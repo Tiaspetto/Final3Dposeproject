@@ -242,23 +242,17 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     #w = model.get_layer('pred_8s').get_weights()
     #model.get_layer('pred_8s').set_weights([bilinear_interpolation(w), w[1]])
 
-    # # fine-tune 
+    # fine-tune 
     # train_layers = ['pred_32',
     #                 'pred_32s_feature1',
-    #                 'pred_32s_feature2',
-    #                 'pred_32s_p1',
-    #                 'pred_32s',
     #                 'pred_16',
     #                 'pred_16s_feature1',
-    #                 'pred_16s_feature2',
-    #                 'pred_16s_p1',
-    #                 'pred_16s',
     #                 'pred_8',
     #                 'pred_8s_feature1',
     #                 'pred_8s_feature2',
     #                 'pred_8s_p1',
     #                 'pred_8s',
-    #                 'fc_pred_16s_1024',
+    #                 'fc_pred_8s_1024',
     #                 'fc_pred_8s',
 
     #                 'bn4b_branch2c', 
