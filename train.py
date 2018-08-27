@@ -9,6 +9,7 @@ from cyclical_learning_rate import CyclicLR
 import random
 import tensorflow as tf
 import cv2
+import sys
 
 joint_parents = [-1, 0, 1, -1, 3, 4, -1, 6, -1, 8, 9, -1, 11, 12]
 
@@ -214,7 +215,7 @@ def feature_train_2d():
                                  validation_steps=249,
                                  workers=1)
 
-def train_3d():
+def train_3d(base_model = '', ckpt = ''):
     train_skip, val_skip = read_skip()
     train_array = list(range(1, 16545)) 
     train_array = [i for i in train_array if i not in train_skip]
@@ -232,7 +233,7 @@ def train_3d():
                                               mode='min')
 
     model, stride = resnet50_32s(input_shape=(
-        224, 224, 3), model_input="model_data/weights-0.0685.hdf5")
+        224, 224, 3), model_input=base_model)
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
     model.compile(optimizer=adam, loss=euc_joint_dist_loss,
@@ -240,7 +241,8 @@ def train_3d():
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
     model.summary()
-    #model.load_weights("model_data/3d_weights-238.4385.hdf5")
+    if ckpt!= '':
+        model.load_weights(ckpt)
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=2069,
                                  callbacks=[ckpt, clr],
@@ -249,7 +251,7 @@ def train_3d():
                                  validation_steps=253,
                                  workers=1)
 
-def train_3d_16s():
+def train_3d_16s(base_model = '', ckpt = ''):
     train_skip, val_skip = read_skip()
     train_array = list(range(1, 16545)) 
     train_array = [i for i in train_array if i not in train_skip]
@@ -267,7 +269,7 @@ def train_3d_16s():
                                               mode='min')
 
     model, stride = resnet50_16s(input_shape=(
-        224, 224, 3), model_input="model_data/3d_weights-2.1806.hdf5")
+        224, 224, 3), model_input=base_model)
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
     model.compile(optimizer=adam, loss=euc_joint_dist_loss,
@@ -275,7 +277,8 @@ def train_3d_16s():
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
     model.summary()
-    #model.load_weights("model_data/3d_weights-238.4385.hdf5")
+    if ckpt != '':
+        model.load_weights(ckpt)
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=2069,
                                  callbacks=[ckpt, clr],
@@ -284,7 +287,7 @@ def train_3d_16s():
                                  validation_steps=253,
                                  workers=1)
 
-def train_3d_8s():
+def train_3d_8s(base_model = '', ckpt = ''):
     train_skip, val_skip = read_skip()
     train_array = list(range(1, 16545)) 
     train_array = [i for i in train_array if i not in train_skip]
@@ -302,7 +305,7 @@ def train_3d_8s():
                                               mode='min')
 
     model, stride = resnet50_8s(input_shape=(
-        224, 224, 3), model_input="model_data/3d_weights_16s-0.1750.hdf5")
+        224, 224, 3), model_input=base_model)
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
     model.compile(optimizer=adam, loss=euc_joint_dist_loss,
@@ -310,7 +313,8 @@ def train_3d_8s():
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
     model.summary()
-    model.load_weights("model_data/3d_weights_8s-0.1714.hdf5")
+    if ckpt != '':
+        model.load_weights(ckpt)
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=2069,
                                  callbacks=[ckpt, clr],
@@ -318,12 +322,23 @@ def train_3d_8s():
                                  validation_data=pose3d_get_train_batch(val_array, 8, False),
                                  validation_steps=253,
                                  workers=1)
+
+def main(argv):
+    if argv[1] == "2d":
+        train_2d()
+    elif argv[1] == "2d_feature":
+        feature_train_2d()
+    elif argv[1] == "3d":
+        train_3d()
+    elif argv[1] == "3d_16s":
+        train_3d_16s()
+    elif argv[1] == "3d_8s":
+        train_3d_8s()
+    else:
+        print("you got run argv!!")
+    
 if __name__ == '__main__':
-    #train_2d()
-    #train_3d()
-    train_3d_16s()
-    #feature_train_2d()
-    #train_3d_8s()
+    main(sys.argv)
     # y_pred = K.variable(K.zeros((8, 14, 3)))
     # y_ture = K.variable(K.zeros((8, 14, 3)))
     # result = euc_joint_dist_loss(y_pred, y_ture)
