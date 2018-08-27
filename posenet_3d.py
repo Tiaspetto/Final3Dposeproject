@@ -284,11 +284,11 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     #                 ]
 
 
-    for l in model.layers:
-        if l.name in train_layers:
-            l.trainable = True
-        else :
-            l.trainable = False
+    # for l in model.layers:
+    #     if l.name in train_layers:
+    #         l.trainable = True
+    #     else :
+    #         l.trainable = False
 
     return model, stride
    
