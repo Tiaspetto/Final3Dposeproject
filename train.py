@@ -102,17 +102,15 @@ def euc_joint_metrics_dist_keras(y_true, y_pred):
     return loss
 
 def calc_parant(y_true, y_pred):
-    output_true = K.variable(K.zeros((None, 14, 3)))
-    output_pred = K.variable(K.zeros((None, 14, 3)))
-    for i in range(0, 14):
+    for i in range(13, -1, -1):
         if joint_parents[i] != -1:
-            output_true[:,i,:].assign(y_true[:, joint_parents[i], :] - y_true[:, i, :])
-            output_pred[:,i,:].assign(y_pred[:, joint_parents[i], :] - y_pred[:, i, :])
+            y_true[:,i,:].assign(y_true[:, joint_parents[i], :] - y_true[:, i, :])
+            y_pred[:,i,:].assign(y_pred[:, joint_parents[i], :] - y_pred[:, i, :])
         else:
-            output_true[:,i,:].assign(y_true[:, i, :])
-            output_pred[:,i,:].assign(y_pred[:, i, :])
+            y_true[:,i,:].assign(y_true[:, i, :])
+            y_pred[:,i,:].assign(y_pred[:, i, :])
 
-    return (output_true, output_pred)
+    return (y_true, y_pred)
 
 def calc_parent_loss1_loss2(py_true, py_pred):
     inner_true = K.sqrt(K.sum(K.square(py_true), axis=2))
@@ -130,11 +128,10 @@ def euc_joint_dist_loss(y_true, y_pred):
     y_pred = K.reshape(y_pred, [-1, 14, 3])
     y_true = K.reshape(y_true, [-1, 14, 3])
     
+    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
     py_true, py_pred = calc_parant(y_true, y_pred)
     
     loss1, loss2 = calc_parent_loss1_loss2(py_true, py_pred)
-    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
-    shape = K.int_shape(loss)
     return loss+30*loss1+5*loss2
 
 def step_decay(epochs):
