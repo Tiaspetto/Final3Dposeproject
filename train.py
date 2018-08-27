@@ -104,12 +104,15 @@ def euc_joint_metrics_dist_keras(y_true, y_pred):
 def calc_parant(y_true, y_pred):
     tf_session = K.get_session()
     shape = K.shape(y_true).eval(session = tf_session)
-    output_true = K.variable(K.zeros([shape[0], 14, 3]))
-    output_pred = K.variable(K.zeros([shape[0], 14, 3]))
+    output_true = K.variable(K.zeros((shape[0], 14, 3)))
+    output_pred = K.variable(K.zeros((shape[0], 14, 3)))
     for i in range(0, 14):
         if joint_parents[i] != -1:
-          output_true[:,i,:].assign(y_true[:, joint_parents[i], :] - y_true[:, i, :])
-          output_pred[:,i,:].assign(y_pred[:, joint_parents[i], :] - y_pred[:, i, :])
+            output_true[:,i,:].assign(y_true[:, joint_parents[i], :] - y_true[:, i, :])
+            output_pred[:,i,:].assign(y_pred[:, joint_parents[i], :] - y_pred[:, i, :])
+        else:
+            output_true[:,i,:].assign(y_true[:, i, :])
+            output_pred[:,i,:].assign(y_pred[:, i, :])
 
     return (output_true, output_pred)
 
@@ -324,3 +327,4 @@ if __name__ == '__main__':
     #train_3d_16s()
     #feature_train_2d()
     train_3d_8s()
+    #y_pred = K.variable(K.zeros(8, 14, 3]))
