@@ -329,11 +329,11 @@ def main(argv):
     elif argv[1] == "2d_feature":
         feature_train_2d()
     elif argv[1] == "3d":
-        train_3d()
+        train_3d(argv[2], argv[3])
     elif argv[1] == "3d_16s":
-        train_3d_16s()
+        train_3d_16s(argv[2], argv[3])
     elif argv[1] == "3d_8s":
-        train_3d_8s()
+        train_3d_8s(argv[2], argv[3])
     else:
         print("you got run argv!!")
     
