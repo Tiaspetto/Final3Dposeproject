@@ -102,12 +102,14 @@ def euc_joint_metrics_dist_keras(y_true, y_pred):
     return loss
 
 def calc_parant(y_true, y_pred):
+    output_true = K.variable(K.zeros([-1, 14, 3]))
+    output_pred = K.variable(K.zeros([-1, 14, 3]))
     for i in range(0, 14):
         if joint_parents[i] != -1:
-          y_true[:, i, :] = y_true[:, joint_parents[i], :] - y_true[:, i, :]
-          y_pred[:, i, :] = y_pred[:, joint_parents[i], :] - y_pred[:, i, :]
+          output_true[:,i,:].assign(y_true[:, joint_parents[i], :] - y_true[:, i, :])
+          output_pred[:,i,:].assign(y_pred[:, joint_parents[i], :] - y_pred[:, i, :])
 
-    return (y_true, y_pred)
+    return (output_true, output_pred)
 
 def calc_parent_loss1_loss2(py_true, py_pred):
     inner_true = K.sqrt(K.sum(K.square(py_true), axis=2))
@@ -125,7 +127,7 @@ def euc_joint_dist_loss(y_true, y_pred):
     loss1, loss2 = calc_parent_loss1_loss2(py_true, py_pred)
     loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
     return loss+30*loss1+5*loss2
-    
+
 def step_decay(epochs):
     initial_lrate = float('0.05')
     drop = 0.5
