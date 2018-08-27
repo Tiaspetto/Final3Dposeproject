@@ -102,8 +102,7 @@ def euc_joint_metrics_dist_keras(y_true, y_pred):
     return loss
 
 def calc_parant(y_true, y_pred):
-    tf_session = K.get_session()
-    shape = K.shape(y_true).eval(session = tf_session)
+    shape = K.int_shape(y_true)
     output_true = K.variable(K.zeros((shape[0], 14, 3)))
     output_pred = K.variable(K.zeros((shape[0], 14, 3)))
     for i in range(0, 14):
@@ -119,8 +118,13 @@ def calc_parant(y_true, y_pred):
 def calc_parent_loss1_loss2(py_true, py_pred):
     inner_true = K.sqrt(K.sum(K.square(py_true), axis=2))
     inner_pred = K.sqrt(K.sum(K.square(py_pred), axis=2))
+  
     loss1 = K.mean(K.square(inner_true - inner_pred)  ,axis = 1)
-    loss2 = K.mean(1-K.dot(py_true, py_pred)/K.dot(inner_true, inner_pred))
+    inner_mul = inner_true * inner_pred
+    inner_vec = K.sum((py_true * py_pred), axis = 2) 
+    inner_vec = 1- inner_vec/inner_mul
+    loss2 = K.mean(inner_vec, axis = 1)
+
     return (loss1, loss2)
 
 def euc_joint_dist_loss(y_true, y_pred):
@@ -131,7 +135,8 @@ def euc_joint_dist_loss(y_true, y_pred):
     
     loss1, loss2 = calc_parent_loss1_loss2(py_true, py_pred)
     loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
-    return loss+30*loss1
+    shape = K.int_shape(loss)
+    return loss+30*loss1+5*loss2
 
 def step_decay(epochs):
     initial_lrate = float('0.05')
@@ -326,5 +331,7 @@ if __name__ == '__main__':
     #train_3d()
     #train_3d_16s()
     #feature_train_2d()
-    train_3d_8s()
-    #y_pred = K.variable(K.zeros(8, 14, 3]))
+    #train_3d_8s()
+    y_pred = K.variable(K.zeros((8, 14, 3)))
+    y_ture = K.variable(K.zeros((8, 14, 3)))
+    result = euc_joint_dist_loss(y_pred, y_ture)
