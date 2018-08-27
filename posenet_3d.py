@@ -3,7 +3,7 @@
 import keras.backend as K
 from keras.engine import Layer
 
-from keras.layers import Input, Dropout, merge, TimeDistributed, ZeroPadding2D
+from keras.layers import Input, Dropout, merge, TimeDistributed, ZeroPadding2D, Conv3D
 from keras.layers.convolutional import Convolution2D, UpSampling2D, ZeroPadding2D, Cropping2D, Deconvolution2D
 from keras.layers.core import Activation
 
@@ -289,8 +289,28 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
 
     return model, stride
 
+
 def make_seq_model():
     seq_input = Input(16, 224, 224, 3)
     base_model, _ = resnet50_8s(input_shape=(224, 224, 3), model_input="model_data/3d_weights_16s-20.2368.hdf5")
-    X = TimeDistributed(base_model)(seq_input)
+    x = base_model.get_layer('pred_8s').output
+
+    model = Model(input=base_model.input,output=x)
+
+    X = TimeDistributed(model)(seq_input)
+    X = Conv3D(32, (3, 3, 3), name = "3D_conv_1", padding = 'same',  kernel_initializer = glorot_normal(seed=0))(X)
+    X = Activation('tanh')(X)
+    X = Conv3D(32, (3, 3, 3), name = "3D_conv_2", padding = 'same',  kernel_initializer = glorot_normal(seed=0))(X)
+    X = Activation('tanh')(X)
+    X = Conv3D(64, (3, 3, 3), name = "3D_conv_3", padding = 'same',  kernel_initializer = glorot_normal(seed=0))(X)
+    X = Activation('tanh')(X)
+    X = Conv3D(64, (3, 3, 3), name = "3D_conv_4", padding = 'same',  kernel_initializer = glorot_normal(seed=0))(X)
+    X = Activation('tanh')(X)
+    X = Dense(1024, activation='linear', name='fc_'  + str('3D_pred_1024'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Activation('tanh')(X)
+    X = Dropout(0.5)(X)
+    X = Dense(42, activation='linear', name='fc_'  + str('3D_pred'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    
+
+    model = Model(input=seq_input, output=X)
    
