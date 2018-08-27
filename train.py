@@ -241,7 +241,7 @@ def train_3d(base_model = '', ckpt = ''):
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
     model.summary()
-    if ckpt!= '':
+    if len(ckpt) > 1:
         model.load_weights(ckpt)
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=2069,
@@ -277,7 +277,7 @@ def train_3d_16s(base_model = '', ckpt = ''):
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
     model.summary()
-    if ckpt != '':
+    if len(ckpt) > 1:
         model.load_weights(ckpt)
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=2069,
@@ -314,7 +314,7 @@ def train_3d_8s(base_model = '', ckpt = ''):
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
     model.summary()
     print(ckpt)
-    if ckpt != '':
+    if len(ckpt) > 1:
         model.load_weights(ckpt)
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=2069,
