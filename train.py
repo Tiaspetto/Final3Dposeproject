@@ -103,6 +103,7 @@ def euc_joint_metrics_dist_keras(y_true, y_pred):
 
 def calc_parant(y_true, y_pred):
     shape = K.int_shape(y_true)
+    print(shape)
     output_true = K.variable(K.zeros((int(shape[0]), 14, 3)))
     output_pred = K.variable(K.zeros((int(shape[0]), 14, 3)))
     for i in range(0, 14):
