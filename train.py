@@ -131,7 +131,7 @@ def euc_joint_dist_loss(y_true, y_pred):
     
     loss1, loss2 = calc_parent_loss1_loss2(py_true, py_pred)
     loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
-    return loss+30*loss1+5*loss2
+    return loss+30*loss1
 
 def step_decay(epochs):
     initial_lrate = float('0.05')
