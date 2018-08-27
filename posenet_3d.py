@@ -219,16 +219,19 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
     
     # merge classifiers
     X = Add()([X, base_model.get_layer('pred_16s_feature1').output])
-    
+    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_8s_feature2', padding = 'same', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_8s_p1', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_8s', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     
