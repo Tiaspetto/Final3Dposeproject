@@ -164,49 +164,49 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
     #model.get_layer('pred_16s').set_weights([bilinear_interpolation(w), w[1]])
 
     # fine-tune 
-    train_layers = ['pred_32',
-                    'pred_32s_feature1',
-                    'pred_32s_feature2',
-                    'pred_32s_p1',
-                    'pred_32s',
-                    'pred_16',
-                    'pred_16s_feature1',
-                    'pred_16s_feature2',
-                    'pred_16s_p1',
-                    'pred_16s',
-                    'fc_pred_16s_1024',
-                    'fc_pred_16s',
+    # train_layers = ['pred_32',
+    #                 'pred_32s_feature1',
+    #                 'pred_32s_feature2',
+    #                 'pred_32s_p1',
+    #                 'pred_32s',
+    #                 'pred_16',
+    #                 'pred_16s_feature1',
+    #                 'pred_16s_feature2',
+    #                 'pred_16s_p1',
+    #                 'pred_16s',
+    #                 'fc_pred_16s_1024',
+    #                 'fc_pred_16s',
 
 
-                    'bn4b_branch2c', 
-                    'res4b_branch2c',
-                    'bn4b_branch2b', 
-                    'res4b_branch2b',
-                    'bn4b_branch2a', 
-                    'res4b_branch2a',
+    #                 'bn4b_branch2c', 
+    #                 'res4b_branch2c',
+    #                 'bn4b_branch2b', 
+    #                 'res4b_branch2b',
+    #                 'bn4b_branch2a', 
+    #                 'res4b_branch2a',
 
-                    'bn4c_branch2c', 
-                    'res4c_branch2c',
-                    'bn4c_branch2b', 
-                    'res4c_branch2b',
-                    'bn4c_branch2a', 
-                    'res4c_branch2a',
+    #                 'bn4c_branch2c', 
+    #                 'res4c_branch2c',
+    #                 'bn4c_branch2b', 
+    #                 'res4c_branch2b',
+    #                 'bn4c_branch2a', 
+    #                 'res4c_branch2a',
 
-                    'bn5a_branch2c', 
-                    'res5a_branch2c',
-                    'bn5a_branch2b', 
-                    'res5a_branch2b',
-                    'bn5a_branch2a', 
-                    'res5a_branch2a',
-                    'res5b_branch2a',
-                    'bn5b_branch2a'
-                    ]
+    #                 'bn5a_branch2c', 
+    #                 'res5a_branch2c',
+    #                 'bn5a_branch2b', 
+    #                 'res5a_branch2b',
+    #                 'bn5a_branch2a', 
+    #                 'res5a_branch2a',
+    #                 'res5b_branch2a',
+    #                 'bn5b_branch2a'
+    #                 ]
 
-    for l in model.layers:
-        if l.name in train_layers:
-            l.trainable = True
-        else :
-            l.trainable = False
+    # for l in model.layers:
+    #     if l.name in train_layers:
+    #         l.trainable = True
+    #     else :
+    #         l.trainable = False
 
     return model, stride
    
