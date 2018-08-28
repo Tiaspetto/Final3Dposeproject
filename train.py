@@ -126,7 +126,7 @@ def euc_joint_dist_loss(y_true, y_pred):
 
 def cal_pckh(py_true, euc_dist):
     inner_true = K.sqrt(K.sum(K.square(py_true), axis=2))
-    half_head = inner_true[:, 7] / 2.0
+    half_head = inner_true[:, 7]
     half_head = K.tile(half_head, [14])
     half_head = K.reshape(half_head, [-1, 14])
     pckh_vec = half_head - euc_dist
@@ -139,7 +139,7 @@ def cal_pckh(py_true, euc_dist):
 def metrics_pckh(y_true, y_pred):
     y_pred = K.reshape(y_pred, [-1, 14, 3])
     y_true = K.reshape(y_true, [-1, 14, 3])
-    
+
     py_true, py_pred = calc_parant(y_true, y_pred)
     euc_dist = K.sqrt(K.sum(K.square(y_true - y_pred), axis=2))
     pckh = cal_pckh(py_true, euc_dist)
