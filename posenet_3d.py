@@ -57,19 +57,15 @@ def resnet50_32s(input_shape = (224, 224, 3), model_input = ''):
     X = UpSampling2D(size = (int(stride), int(stride)))(X)
 
     X = Conv2D(256, (3, 3), strides = (1, 1), name = 'pred_32s_feature1', padding = 'same', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_32s_feature2', padding = 'same', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_32s_p1', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
     
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_32s', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     # output layer
@@ -135,19 +131,15 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
     X = Conv2D(256, (3, 3), strides = (1, 1), name = 'pred_16s_feature1', padding = 'same', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
     X = Add()([X, base_model.get_layer('pred_32s_feature1').output])
-    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_16s_feature2', padding = 'same', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_16s_p1', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_16s', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
     #X = AveragePooling2D(pool_size=(2, 2), padding='valid', name='avg_pool')(X)
     
@@ -226,7 +218,6 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = 'None'):
     
     # merge classifiers
     X = Add()([X, base_model.get_layer('pred_16s_feature1').output])
-    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_8s_feature2', padding = 'same', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
@@ -234,19 +225,17 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = 'None'):
     X = Activation('tanh')(X)
 
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_8s_p1', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_8s', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     
     # output layer
     X = Flatten()(X)
-    X = Dense(1024, activation='linear', name='fc_'  + str('pred_8s_1024'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Dense(1024, activation='linear', name='fc_'  + str('pred_8s_1024'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.001))(X)
     X = Activation('tanh')(X)
-    X = Dense(42, activation='linear', name='fc_'  + str('pred_8s'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
+    X = Dense(42, activation='linear', name='fc_'  + str('pred_8s'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.001))(X)
     
     model = Model(input=base_model.input,output=X)
     # create bilinear interpolation
