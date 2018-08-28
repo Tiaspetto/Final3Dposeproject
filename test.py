@@ -41,7 +41,7 @@ if __name__ == '__main__':
            text = str(index).zfill(5) + ","
            f.writelines(text)
            f.close()
-    val_array = list(range(1, 2024)) 
+    val_array = list(range(1, 4740)) 
     for index in val_array:
        img_path = "{root_path}{data_path}{pid}.jpg"
        img_path = img_path.format(root_path = os.path.abspath('.'), data_path = "/data/ECCV18_Preprocessed/val/", pid  = str(index).zfill(5))

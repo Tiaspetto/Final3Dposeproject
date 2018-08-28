@@ -244,7 +244,7 @@ def train_3d(base_model = '', ckpt_model = ''):
     train_array = [i for i in train_array if i not in train_skip]
     train_array = shuffle(train_array)
 
-    val_array = list(range(1, 2024))
+    val_array = list(range(1, 4740))
     val_array = [i for i in val_array if i not in val_skip]
     val_array = shuffle(val_array)
 
@@ -271,7 +271,7 @@ def train_3d(base_model = '', ckpt_model = ''):
                                  callbacks=[ckpt, clr],
                                  epochs=60000, verbose=1,
                                  validation_data=pose3d_get_train_batch(val_array, 8, False),
-                                 validation_steps=253,
+                                 validation_steps=593,
                                  workers=1)
 
 def train_3d_16s(base_model = '', ckpt_model = 'None'):
@@ -280,7 +280,7 @@ def train_3d_16s(base_model = '', ckpt_model = 'None'):
     train_array = [i for i in train_array if i not in train_skip]
     train_array = shuffle(train_array)
 
-    val_array = list(range(1, 2024))
+    val_array = list(range(1, 4740))
     val_array = [i for i in val_array if i not in val_skip]
     val_array = shuffle(val_array)
 
@@ -307,7 +307,7 @@ def train_3d_16s(base_model = '', ckpt_model = 'None'):
                                  callbacks=[ckpt, clr],
                                  epochs=60000, verbose=1,
                                  validation_data=pose3d_get_train_batch(val_array, 8, False),
-                                 validation_steps=253,
+                                 validation_steps=593,
                                  workers=1)
 
 def train_3d_8s(base_model = '', ckpt_model = 'None'):
@@ -316,7 +316,7 @@ def train_3d_8s(base_model = '', ckpt_model = 'None'):
     train_array = [i for i in train_array if i not in train_skip]
     train_array = shuffle(train_array)
 
-    val_array = list(range(1, 2024))
+    val_array = list(range(1, 4740))
     val_array = [i for i in val_array if i not in val_skip]
     val_array = shuffle(val_array)
 
@@ -344,7 +344,7 @@ def train_3d_8s(base_model = '', ckpt_model = 'None'):
                                  callbacks=[ckpt, clr],
                                  epochs=60000, verbose=1,
                                  validation_data=pose3d_get_train_batch(val_array, 8, False),
-                                 validation_steps=253,
+                                 validation_steps=593,
                                  workers=1)
 
 def main(argv):
