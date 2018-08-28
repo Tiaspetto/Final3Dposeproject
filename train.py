@@ -274,7 +274,7 @@ def train_3d(base_model = '', ckpt_model = ''):
                                  validation_steps=253,
                                  workers=1)
 
-def train_3d_16s(base_model = '', ckpt_model = ''):
+def train_3d_16s(base_model = '', ckpt_model = 'None'):
     train_skip, val_skip = read_skip()
     train_array = list(range(1, 16545)) 
     train_array = [i for i in train_array if i not in train_skip]
@@ -300,7 +300,7 @@ def train_3d_16s(base_model = '', ckpt_model = ''):
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-7"), max_lr = float("1e-4"), step_size = 2069, mode = 'triangular')
     model.summary()
-    if ckpt_model != '':
+    if ckpt_model != 'None':
         model.load_weights(ckpt_model)
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=2069,
