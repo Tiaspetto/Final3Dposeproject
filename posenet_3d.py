@@ -210,11 +210,11 @@ def resnet50_16s(input_shape = (224, 224, 3), model_input = ''):
 
     return model, stride
    
-def resnet50_8s(input_shape = (224, 224, 3), model_input = ''):
+def resnet50_8s(input_shape = (224, 224, 3), model_input = 'None'):
     # load 16s base model
     base_model, stride = resnet50_16s(input_shape)
 
-    if model_input != '':
+    if model_input != 'None':
         base_model.load_weights(model_input)
     
     # add 16s classifier
