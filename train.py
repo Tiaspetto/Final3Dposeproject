@@ -113,7 +113,7 @@ def calc_parent_loss1_loss2(py_true, py_pred):
     inner_pred = K.sqrt(K.sum(K.square(py_pred), axis=2))
   
     loss1 = K.mean(K.square(inner_true - inner_pred)  ,axis = 1)
-    inner_mul = inner_true * inner_pred
+    inner_mul = inner_true * inner_pred + float("1e-8")
     inner_vec = K.sum((py_true * py_pred), axis = 2) 
     inner_vec = 1- inner_vec/inner_mul
     loss2 = K.mean(inner_vec, axis = 1)
@@ -129,7 +129,7 @@ def euc_joint_dist_loss(y_true, y_pred):
     # shape = K.int_shape(py_true)
     # print(shape)
     loss1, loss2 = calc_parent_loss1_loss2(py_true, py_pred)
-    return loss+30*loss1+5*loss2
+    return loss+16*loss1+4*loss2
 
 def step_decay(epochs):
     initial_lrate = float('0.05')
@@ -356,5 +356,8 @@ def main(argv):
 if __name__ == '__main__':
     main(sys.argv)
     # y_pred = K.variable(K.zeros((8, 14, 3)))
-    # y_ture = K.variable(K.zeros((8, 14, 3)))
+    # y_ture = K.variable(K.ones((8, 14, 3)))
     # result = euc_joint_dist_loss(y_pred, y_ture)
+    
+    # sess = K.get_session()
+    # print(sess.run(result))
