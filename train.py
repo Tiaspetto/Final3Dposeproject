@@ -94,13 +94,6 @@ def shuffle(index_array):
 def euc_dist_keras(y_true, y_pred):
     return K.sqrt(K.sum(K.square(y_true - y_pred), axis=-1, keepdims=True))
 
-def euc_joint_metrics_dist_keras(y_true, y_pred):
-    y_pred = K.reshape(y_pred, [-1, 14, 3])
-    y_true = K.reshape(y_true, [-1, 14, 3])
-    y_pred = y_pred * 1000.0
-    y_true = y_true * 1000.0
-    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
-    return loss
 
 def calc_parant(y_true, y_pred):
     py_true = K.concatenate([y_true[:,i,:] if joint_parents[i] == -1 else (y_true[:,i,:] - y_true[:,joint_parents[i],:] ) for i in range(0,14)])
@@ -130,6 +123,33 @@ def euc_joint_dist_loss(y_true, y_pred):
     # print(shape)
     loss1, loss2 = calc_parent_loss1_loss2(py_true, py_pred)
     return loss+16*loss1+4*loss2
+
+def cal_pckh(py_true, euc_dist):
+    inner_true = K.sqrt(K.sum(K.square(py_true), axis=2))
+    half_head = inner_true[:, 7] / 2.0
+    half_head = K.tile(half_head, [14])
+    half_head = K.reshape(half_head, [8, 14])
+    pckh_vec = half_head - euc_dist
+    greater = K.greater_equal(pckh_vec, 0)
+    greater = K.cast(greater, "float32")
+    greater = K.mean(greater, axis = 1)
+    return greater
+
+
+def metrics_pckh(y_true, y_pred):
+    py_true, py_pred = calc_parant(y_true, y_pred)
+    euc_dist = K.sqrt(K.sum(K.square(y_true - y_pred), axis=2))
+    pckh = cal_pckh(py_true, euc_dist)
+    return pckh
+
+def euc_joint_metrics_dist_keras(y_true, y_pred):
+    y_pred = K.reshape(y_pred, [-1, 14, 3])
+    y_true = K.reshape(y_true, [-1, 14, 3])
+    y_pred = y_pred * 1000.0
+    y_true = y_true * 1000.0
+
+    loss = K.mean(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis = 1)
+    return loss
 
 def step_decay(epochs):
     initial_lrate = float('0.05')
@@ -309,7 +329,7 @@ def train_3d_8s(base_model = '', ckpt_model = ''):
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
     model.compile(optimizer=adam, loss=euc_joint_dist_loss,
-                  metrics= [euc_joint_metrics_dist_keras])
+                  metrics= [euc_joint_metrics_dist_keras, metrics_pckh])
     #lrate = LearningRateScheduler(step_decay)
     clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
     model.summary()
@@ -356,8 +376,8 @@ def main(argv):
 if __name__ == '__main__':
     main(sys.argv)
     # y_pred = K.variable(K.zeros((8, 14, 3)))
-    # y_ture = K.variable(K.ones((8, 14, 3)))
-    # result = euc_joint_dist_loss(y_pred, y_ture)
-    
+    # y_true = K.variable(K.ones((8, 14, 3)))
+    # #result = euc_joint_dist_loss(y_pred, y_true)
+    # pckh = metrics_pckh(y_pred, y_true)
     # sess = K.get_session()
-    # print(sess.run(result))
+    # print(sess.run(pckh))
