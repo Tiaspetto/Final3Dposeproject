@@ -260,9 +260,9 @@ def train_3d(base_model = '', ckpt_model = ''):
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
     model.compile(optimizer=adam, loss=euc_joint_dist_loss,
-                  metrics= [euc_joint_metrics_dist_keras])
+                  metrics= [euc_joint_metrics_dist_keras, metrics_pckh])
     #lrate = LearningRateScheduler(step_decay)
-    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
+    clr = CyclicLR(base_lr = float("1e-7"), max_lr = float("1e-4"), step_size = 2069, mode = 'triangular')
     model.summary()
     if ckpt_model != '':
         model.load_weights(ckpt_model)
@@ -296,9 +296,9 @@ def train_3d_16s(base_model = '', ckpt_model = ''):
     #adadelta = optimizers.Adadelta(lr=0.05, rho=0.9, decay=0.0)
     adam = optimizers.adam(lr=float("1e-4"))
     model.compile(optimizer=adam, loss=euc_joint_dist_loss,
-                  metrics= [euc_joint_metrics_dist_keras])
+                  metrics= [euc_joint_metrics_dist_keras, metrics_pckh])
     #lrate = LearningRateScheduler(step_decay)
-    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
+    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-4"), step_size = 2069, mode = 'triangular')
     model.summary()
     if ckpt_model != '':
         model.load_weights(ckpt_model)
@@ -310,7 +310,7 @@ def train_3d_16s(base_model = '', ckpt_model = ''):
                                  validation_steps=253,
                                  workers=1)
 
-def train_3d_8s(base_model = '', ckpt_model = ''):
+def train_3d_8s(base_model = '', ckpt_model = 'None'):
     train_skip, val_skip = read_skip()
     train_array = list(range(1, 16545)) 
     train_array = [i for i in train_array if i not in train_skip]
@@ -334,10 +334,10 @@ def train_3d_8s(base_model = '', ckpt_model = ''):
     model.compile(optimizer=adam, loss=euc_joint_dist_loss,
                   metrics= [euc_joint_metrics_dist_keras, metrics_pckh])
     #lrate = LearningRateScheduler(step_decay)
-    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-3"), step_size = 2069, mode = 'triangular')
+    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-4"), step_size = 2069, mode = 'triangular')
     model.summary()
     print(ckpt)
-    if ckpt_model != '':
+    if ckpt_model != 'None':
         model.load_weights(ckpt_model)
     result = model.fit_generator(generator=pose3d_get_train_batch(train_array, 8, True),
                                  steps_per_epoch=2069,
@@ -361,14 +361,14 @@ def main(argv):
             print("WRONG ARGS NUM")
     elif argv[1] == "3d_16s":
         if len(argv) == 3:
-            train_3d_16s(argv[2], '')
+            train_3d_16s(argv[2], 'None')
         elif len(argv) == 4:
             train_3d_16s(argv[2], argv[3])
         else:
             print("WRONG ARGS NUM")
     elif argv[1] == "3d_8s":
         if len(argv) == 3:
-            train_3d_8s(argv[2], '')
+            train_3d_8s(argv[2], 'None')
         elif len(argv) == 4:
             train_3d_8s(argv[2], argv[3])
         else:
