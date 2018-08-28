@@ -122,7 +122,7 @@ def euc_joint_dist_loss(y_true, y_pred):
     # shape = K.int_shape(py_true)
     # print(shape)
     loss1, loss2 = calc_parent_loss1_loss2(py_true, py_pred)
-    return loss+16*loss1+4*loss2
+    return loss+4*loss1+loss2
 
 def cal_pckh(py_true, euc_dist):
     inner_true = K.sqrt(K.sum(K.square(py_true), axis=2))
