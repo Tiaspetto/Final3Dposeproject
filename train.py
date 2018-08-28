@@ -128,7 +128,7 @@ def cal_pckh(py_true, euc_dist):
     inner_true = K.sqrt(K.sum(K.square(py_true), axis=2))
     half_head = inner_true[:, 7] / 2.0
     half_head = K.tile(half_head, [14])
-    half_head = K.reshape(half_head, [8, 14])
+    half_head = K.reshape(half_head, [-1, 14])
     pckh_vec = half_head - euc_dist
     greater = K.greater_equal(pckh_vec, 0)
     greater = K.cast(greater, "float32")
