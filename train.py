@@ -137,6 +137,9 @@ def cal_pckh(py_true, euc_dist):
 
 
 def metrics_pckh(y_true, y_pred):
+    y_pred = K.reshape(y_pred, [-1, 14, 3])
+    y_true = K.reshape(y_true, [-1, 14, 3])
+    
     py_true, py_pred = calc_parant(y_true, y_pred)
     euc_dist = K.sqrt(K.sum(K.square(y_true - y_pred), axis=2))
     pckh = cal_pckh(py_true, euc_dist)
