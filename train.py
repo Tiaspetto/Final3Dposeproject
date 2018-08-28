@@ -298,7 +298,7 @@ def train_3d_16s(base_model = '', ckpt_model = ''):
     model.compile(optimizer=adam, loss=euc_joint_dist_loss,
                   metrics= [euc_joint_metrics_dist_keras, metrics_pckh])
     #lrate = LearningRateScheduler(step_decay)
-    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-4"), step_size = 2069, mode = 'triangular')
+    clr = CyclicLR(base_lr = float("1e-7"), max_lr = float("1e-4"), step_size = 2069, mode = 'triangular')
     model.summary()
     if ckpt_model != '':
         model.load_weights(ckpt_model)
@@ -334,7 +334,7 @@ def train_3d_8s(base_model = '', ckpt_model = 'None'):
     model.compile(optimizer=adam, loss=euc_joint_dist_loss,
                   metrics= [euc_joint_metrics_dist_keras, metrics_pckh])
     #lrate = LearningRateScheduler(step_decay)
-    clr = CyclicLR(base_lr = float("1e-6"), max_lr = float("1e-4"), step_size = 2069, mode = 'triangular')
+    clr = CyclicLR(base_lr = float("1e-7"), max_lr = float("1e-4"), step_size = 2069, mode = 'triangular')
     model.summary()
     print(ckpt)
     if ckpt_model != 'None':
