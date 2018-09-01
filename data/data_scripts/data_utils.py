@@ -341,7 +341,7 @@ def get_3d_train_batch(img_path, pose_path):
                         for i in range(0,8):
                             if len(X_data_quene) == 8:
                                 X_data_quene.pop(0)
-                            img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, pre_load_index)
+                            img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, train_start_index)
                             if not os.path.exists(img_name):
                                 print(img_name, 'not exists!')
                                 continue 
