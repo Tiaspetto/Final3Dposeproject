@@ -347,6 +347,30 @@ def train_3d_8s(base_model = '', ckpt_model = 'None'):
                                  validation_steps=593,
                                  workers=1)
 
+def train_3d_conv(base_model = ''):
+    img_path = ""
+    ckpt_path = 'log/3d_conv_weights-{val_loss:.4f}.hdf5'
+    ckpt = tf.keras.callbacks.ModelCheckpoint(ckpt_path,
+                                              monitor='val_loss',
+                                              verbose=1,
+                                              save_best_only=True,
+                                              mode='min')
+    model = make_seq_model(base_model)
+    adam = optimizers.adam(lr=float("1e-4"))
+    model.compile(optimizer=adam, loss=euc_joint_dist_loss,
+                  metrics= [euc_joint_metrics_dist_keras, metrics_pckh])
+    clr = CyclicLR(base_lr = float("1e-7"), max_lr = float("1e-4"), step_size = 422055, mode = 'triangular')
+    model.summary()
+
+    result = model.fit_generator(generator=get_3d_train_batch(img_path, pose_path),
+                                 steps_per_epoch=410295,
+                                 callbacks=[ckpt, clr],
+                                 epochs=60000, verbose=1,
+                                 validation_data=get_3d_Val_batch(img_path, pose_path),
+                                 validation_steps=840,
+                                 workers=1)
+
+
 def main(argv):
     if argv[1] == "2d":
         train_2d()

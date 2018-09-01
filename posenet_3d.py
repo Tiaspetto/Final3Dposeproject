@@ -286,10 +286,10 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = 'None'):
     return model, stride
 
 
-def make_seq_model():
-    seq_input = Input(16, 224, 224, 3)
-    base_model, _ = resnet50_8s(input_shape=(224, 224, 3), model_input="model_data/3d_weights_16s-20.2368.hdf5")
-    x = base_model.get_layer('pred_8s').output
+def make_seq_model(model_input):
+    seq_input = Input(8, 224, 224, 3)
+    base_model, _ = resnet50_16s(input_shape=(224, 224, 3), model_input=model_input)
+    x = base_model.get_layer('pred_16s').output
 
     model = Model(input=base_model.input,output=x)
 
@@ -307,6 +307,20 @@ def make_seq_model():
     X = Dropout(0.5)(X)
     X = Dense(42, activation='linear', name='fc_'  + str('3D_pred'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
+    
+    train_layers = ["3D_conv_1",
+                    "3D_conv_2",
+                    "3D_conv_3",
+                    "3D_conv_4",
+                    "fc_3D_pred_1024",
+                    "fc_3D_pred"
+                    ]
+
+    for l in model.layers:
+        if l.name in train_layers:
+            l.trainable = True
+        else :
+            l.trainable = False
 
     model = Model(input=seq_input, output=X)
    

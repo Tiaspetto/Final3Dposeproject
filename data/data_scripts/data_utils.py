@@ -8,7 +8,6 @@ import os
 from mpl_toolkits.mplot3d import Axes3D
 import math
 from matplotlib.pyplot import imshow
-import os
 import csv
 body_part = 14
 sigma = 32.0
@@ -26,6 +25,8 @@ MPII_source_train_path = "/data/MPII/mpii_human_pose_v1/pose/train/"
 MPII_source_val_path = "/data/MPII/mpii_human_pose_v1/pose/val/"
 MPII_source_img_path = "/data/MPII/mpii_human_pose_v1/images/"
 MPII_joints = [0, 1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 8, 9]
+
+Human36_joints = [1, 2, 3, 6, 7, 8, 13, 14, 16, 18, 19, 24, 26, 27]
 
 def put_heatmap(heatmap, plane_idx, center):
     #print(plane_idx, center, sigma)
@@ -277,7 +278,149 @@ def print_path():
     print(os.path.abspath('.')+lsp_img_source_path,
           os.path.abspath('.')+heatmap_path)
 
+#==========================================================================
+
+
+#folder_name = 's_{:02d}_act_{:02d}_subact_{:02d}_ca_{:02d}'.format(subject, action, subaction, camera)
+
+def human36_read_joints(file_path):
+    data = scipy.io.loadmat(file_path)
+    
+    pose = data['data']
+    #print(np.max(pose), np.min(pose))
+    return pose
+
+def human36_pose_preprocess(data):
+    data = np.reshape(data, (32, 3))
+    pose_data = []
+    for i in range(0, 32):
+        if i in Human36_joints:
+            print(i)
+            pose_data.append(data[i,:]-data[0,:])
+
+    pose_data = np.array(pose_data)
+    pose_data = pose_data * (1.0/1000.0)
+    return pose_data
+
+
+def get_3d_train_batch(img_path, pose_path):
+    action_s = {2:"Directions", 3:"Discussion", 4:"Eating", 5:"Greeting", 6:"Phoning", 7:"Posing", 8:"Purchases", 9:"Sitting", 10:"SittingDown", 11:"Smoking", 12:"TakingPhoto", 13:"Waiting", 14:"Walking", 15:"WalkingDog", 16:"WalkingTogether"}
+    sub_s = {" 1.54138969", " 1.55011271", " 1.58860488", " 1.60457274", ".54138969", ".55011271", ".58860488", ".60457274"}
+    subject_list = [1, 5, 6, 7, 8, 9, 11]
+    action_list = np.arange(2, 17)
+    subaction_list = np.arange(1, 3)
+    camera_list = np.arange(1, 5)
+    for subject in subject_list:
+        for action in action_list:
+            for subaction in subaction_list:
+                for camera in camera_list:
+                    folder_name = 's_{:02d}_act_{:02d}_subact_{:02d}_ca_{:02d}'.format(subject, action, subaction, camera)
+                    path = img_path + folder_name
+                    meta_name = path + '\\matlab_meta.mat'
+                    if not os.path.exists(meta_name):
+                        print(meta_name, 'not exists!')
+                        continue  
+                    meta = sio.loadmat(meta_name)
+                    num_images = meta['num_images']
+                    data_start_index = 36
+                    train_start_index = 71
+                    frames_index = data_start_index
+                    pre_load_index = 36
+                    X_data_quene = []
+
+                    pose_file_index =  subaction_list * camera_list
+
+                    pose_file_name = "S{subject}\\{action}{subindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[pose_file_index-1])
+                    pose_file_path = pose_path + pose_file_name
+                    
+                    pose_data = human36_read_joints(pose_file_path)
+                    pose_data = pose_data[0,0]
+
+                    while pre_load_index < train_start_index:
+                        img_name = img_path + folder_name + '\\' + '{}_{:06d}.jpg'.format(folder_name, pre_load_index)
+                        img = cv2.imread(img_name)
+                        img = img * (2.0 / 255.0) - 1.0
+                        X_data_quene.append(img)
+                        pre_load_index += 5
+
+                    while train_start_index < num_images:
+                        if len(X_data_quene) == 8:
+                            X_data_quene.pop(0)
+                        img_name = img_path + folder_name + '\\' + '{}_{:06d}.jpg'.format(folder_name, train_start_index)
+                        img = cv2.imread(img_name)
+                        img = img * (2.0 / 255.0) - 1.0
+                        X_data_quene.append(img)
+
+                        X_data = np.array(X_data_quene)
+                        Y_data = pose_data[train_start_index, :]
+                        Y_data = human36_pose_preprocess(Y_data)
+
+                        train_start_index += 5
+
+                        yield X_data, Y_data
+
+def get_3d_Val_batch(img_path, pose_path):
+    action_s = {2:"Directions", 3:"Discussion", 4:"Eating", 5:"Greeting", 6:"Phoning", 7:"Posing", 8:"Purchases", 9:"Sitting", 10:"SittingDown", 11:"Smoking", 12:"TakingPhoto", 13:"Waiting", 14:"Walking", 15:"WalkingDog", 16:"WalkingTogether"}
+    sub_s = {" 1.54138969", " 1.55011271", " 1.58860488", " 1.60457274", ".54138969", ".55011271", ".58860488", ".60457274"}
+    subject_list = [1, 5, 6, 7, 8, 9, 11]
+    action_list = np.arange(2, 17)
+    subaction_list = np.arange(1, 3)
+    camera_list = np.arange(1, 5)
+    for subject in subject_list:
+        for action in action_list:
+            for subaction in subaction_list:
+                for camera in camera_list:
+                    folder_name = 's_{:02d}_act_{:02d}_subact_{:02d}_ca_{:02d}'.format(subject, action, subaction, camera)
+                    path = img_path + folder_name
+                    meta_name = path + '\\matlab_meta.mat'
+                    data_start_index = 36
+                    frames_index = data_start_index
+                    pre_load_index = 1
+                    X_data_quene = []
+
+                    pose_file_index =  subaction_list * camera_list
+
+                    pose_file_name = "S{subject}\\{action}{subindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[pose_file_index-1])
+                    pose_file_path = pose_path + pose_file_name
+                    
+                    pose_data = human36_read_joints(pose_file_path)
+                    pose_data = pose_data[0,0]
+
+                    while pre_load_index < data_start_index:
+                        img_name = img_path + folder_name + '\\' + '{}_{:06d}.jpg'.format(folder_name, pre_load_index)
+                        img = cv2.imread(img_name)
+                        img = img * (2.0 / 255.0) - 1.0
+                        X_data_quene.append(img)
+                        pre_load_index += 5
+
+                    while data_start_index <= 36:
+                        if len(X_data_quene) == 8:
+                            X_data_quene.pop(0)
+                        img_name = img_path + folder_name + '\\' + '{}_{:06d}.jpg'.format(folder_name, data_start_index)
+                        img = cv2.imread(img_name)
+                        img = img * (2.0 / 255.0) - 1.0
+                        X_data_quene.append(img)
+
+                        X_data = np.array(X_data_quene)
+                        Y_data = pose_data[data_start_index, :]
+                        Y_data = human36_pose_preprocess(Y_data)
+
+                        data_start_index += 5
+
+                        yield X_data, Y_data
+
+
 
 if __name__ == '__main__':
-    MPI_prerpocessing(True)
-    MPI_prerpocessing(False)
+    #MPI_prerpocessing(True)
+    #MPI_prerpocessing(False)
+    images_path = "D:\\dissertation\\data\\human3.6\\H36M-images\\images\\"
+    pose_path = "D:\\dissertation\\data\\human3.6\\Annot\\"
+
+    data = human36_read_joints("D:\\dissertation\\data\\human3.6\\Annot\\S11\\Directions 1.54138969.cdf.mat")
+    data = data[0,0]
+    print(np.shape(data))
+
+    Y_data = data[1, :]
+
+    human36_pose_preprocess(Y_data)
