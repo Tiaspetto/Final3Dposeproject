@@ -316,7 +316,7 @@ def get_3d_train_batch(img_path, pose_path):
                 for camera in camera_list:
                     folder_name = 's_{:02d}_act_{:02d}_subact_{:02d}_ca_{:02d}'.format(subject, action, subaction, camera)
                     path = img_path + folder_name
-                    meta_name = path + '\\matlab_meta.mat'
+                    meta_name = path + '/matlab_meta.mat'
                     if not os.path.exists(meta_name):
                         print(meta_name, 'not exists!')
                         continue  
@@ -328,9 +328,11 @@ def get_3d_train_batch(img_path, pose_path):
 
                     pose_file_index =  subaction_list * camera_list
 
-                    pose_file_name = "S{subject}\\{action}{subindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[pose_file_index-1])
+                    pose_file_name = "S{subject}/{action}{subindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[pose_file_index-1])
                     pose_file_path = pose_path + pose_file_name
-                    
+                    if not os.path.exists(pose_file_name):
+                        print(pose_file_name, 'not exists!')
+                        continue 
                     pose_data = human36_read_joints(pose_file_path)
                     pose_data = pose_data[0,0]
 
@@ -340,7 +342,10 @@ def get_3d_train_batch(img_path, pose_path):
                         for i in range(0,8):
                             if len(X_data_quene) == 8:
                                 X_data_quene.pop(0)
-                            img_name = img_path + folder_name + '\\' + '{}_{:06d}.jpg'.format(folder_name, pre_load_index)
+                            img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, pre_load_index)
+                            if not os.path.exists(img_name):
+                                print(img_name, 'not exists!')
+                                continue 
                             img = cv2.imread(img_name)
                             img = img * (2.0 / 255.0) - 1.0
                             X_data_quene.append(img)
@@ -372,7 +377,7 @@ def get_3d_Val_batch(img_path, pose_path):
                 for camera in camera_list:
                     folder_name = 's_{:02d}_act_{:02d}_subact_{:02d}_ca_{:02d}'.format(subject, action, subaction, camera)
                     path = img_path + folder_name
-                    meta_name = path + '\\matlab_meta.mat'
+                    meta_name = path + '/matlab_meta.mat'
                     data_start_index = 36
                     frames_index = data_start_index
                     pre_load_index = 1
@@ -380,14 +385,14 @@ def get_3d_Val_batch(img_path, pose_path):
 
                     pose_file_index =  subaction_list * camera_list
 
-                    pose_file_name = "S{subject}\\{action}{subindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[pose_file_index-1])
+                    pose_file_name = "S{subject}/{action}{subindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[pose_file_index-1])
                     pose_file_path = pose_path + pose_file_name
                     
                     pose_data = human36_read_joints(pose_file_path)
                     pose_data = pose_data[0,0]
 
                     while pre_load_index < data_start_index:
-                        img_name = img_path + folder_name + '\\' + '{}_{:06d}.jpg'.format(folder_name, pre_load_index)
+                        img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, pre_load_index)
                         img = cv2.imread(img_name)
                         img = img * (2.0 / 255.0) - 1.0
                         X_data_quene.append(img)
@@ -396,7 +401,7 @@ def get_3d_Val_batch(img_path, pose_path):
                     while data_start_index <= 36:
                         if len(X_data_quene) == 8:
                             X_data_quene.pop(0)
-                        img_name = img_path + folder_name + '\\' + '{}_{:06d}.jpg'.format(folder_name, data_start_index)
+                        img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, data_start_index)
                         img = cv2.imread(img_name)
                         img = img * (2.0 / 255.0) - 1.0
                         X_data_quene.append(img)
