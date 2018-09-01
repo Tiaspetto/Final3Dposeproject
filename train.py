@@ -361,7 +361,7 @@ def train_3d_conv(base_model = ''):
     model.compile(optimizer=adam, loss=euc_joint_dist_loss,
                   metrics= [euc_joint_metrics_dist_keras, metrics_pckh])
     clr = CyclicLR(base_lr = float("1e-7"), max_lr = float("1e-4"), step_size = 51000, mode = 'triangular')
-    model.summary()
+    #model.summary()
 
     result = model.fit_generator(generator=get_3d_train_batch(img_path, pose_path),
                                  steps_per_epoch=51000,
