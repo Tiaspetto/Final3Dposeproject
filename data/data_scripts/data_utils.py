@@ -295,7 +295,7 @@ def human36_pose_preprocess(data):
     pose_data = []
     for i in range(0, 32):
         if i in Human36_joints:
-            print(i)
+            #print(i)
             pose_data.append(data[i,:]-data[0,:])
 
     pose_data = np.array(pose_data)
@@ -329,8 +329,8 @@ def get_3d_train_batch(img_path, pose_path):
 
                     pose_file_name = "S{subject}/{action}{subindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[pose_file_index-1])
                     pose_file_path = pose_path + pose_file_name
-                    if not os.path.exists(pose_file_name):
-                        print(pose_file_name, 'not exists!')
+                    if not os.path.exists(pose_file_path):
+                        print(pose_file_path, 'not exists!')
                         continue 
                     pose_data = human36_read_joints(pose_file_path)
                     pose_data = pose_data[0,0]
