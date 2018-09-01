@@ -320,7 +320,7 @@ def get_3d_train_batch(img_path, pose_path):
                     if not os.path.exists(meta_name):
                         print(meta_name, 'not exists!')
                         continue  
-                    meta = io.loadmat(meta_name)
+                    meta = scipy.io.loadmat(meta_name)
                     num_images = meta['num_images']
                     train_start_index = 41
                     frames_index = data_start_index
