@@ -300,6 +300,7 @@ def human36_pose_preprocess(data):
 
     pose_data = np.array(pose_data)
     pose_data = pose_data * (1.0/1000.0)
+    pose_data = np.reshape(pose_data, (42, ))
     return pose_data
 
 
