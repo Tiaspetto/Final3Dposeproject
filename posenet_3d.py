@@ -287,7 +287,7 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = 'None'):
 
 
 def make_seq_model(model_input):
-    seq_input = Input(8, 224, 224, 3)
+    seq_input = Input((8, 224, 224, 3))
     base_model, _ = resnet50_16s(input_shape=(224, 224, 3), model_input=model_input)
     x = base_model.get_layer('pred_16s').output
 
