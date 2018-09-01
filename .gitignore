@@ -12,3 +12,10 @@
 *.json
 *.hdf5
 *.tgz
+data/coco/
+data/ECCV18_Challenge/
+data/ECCV18_Preprocessed/
+data/human3.6/
+data/lsp_dataset/
+data/lsp_dataset_original/
+data/MPII/
