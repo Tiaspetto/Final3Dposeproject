@@ -308,6 +308,7 @@ def make_seq_model(model_input):
     X = Dropout(0.5)(X)
     X = Dense(42, activation='linear', name='fc_'  + str('3D_pred'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
     
+    time_model = Model(input=seq_input, output=X)
     
     train_layers = ["3D_conv_1",
                     "3D_conv_2",
@@ -323,5 +324,5 @@ def make_seq_model(model_input):
         else :
             l.trainable = False
 
-    model = Model(input=seq_input, output=X)
+    return time_model
    
