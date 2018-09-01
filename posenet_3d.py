@@ -289,11 +289,11 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = 'None'):
 def make_seq_model(model_input):
     base_model, _ = resnet50_16s(input_shape=(224, 224, 3))
     base_model.load_weights(model_input)
-    x = base_model.get_layer('pred_16s').output
+    x = base_model.get_layer('pred_16s').get_output_shape_for
 
     model = Model(input=base_model.input,output=x)
-    
-    main_input = Input(shape=(8, 224, 224, 3), dtype='float32', name='cnn_input')
+
+    main_input = Input(shape=(224, 224, 3), dtype='float32', name='cnn_input')
 
     X = TimeDistributed(model)(main_input)
     X = Conv3D(32, (3, 3, 3), name = "3D_conv_1", padding = 'same',  kernel_initializer = glorot_normal(seed=0))(X)
