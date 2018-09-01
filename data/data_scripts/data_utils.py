@@ -344,7 +344,7 @@ def get_3d_train_batch(img_path, pose_path):
                                 X_data_quene.pop(0)
                             img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, train_start_index)
                             if not os.path.exists(img_name):
-                                print(img_name, 'not exists!')
+                                print(num_images, img_name, 'not exists!')
                                 continue 
                             img = cv2.imread(img_name)
                             img = img * (2.0 / 255.0) - 1.0
