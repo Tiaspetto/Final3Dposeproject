@@ -292,7 +292,7 @@ def make_seq_model(model_input):
     x = base_model.get_layer('pred_16s').output
 
     model = Model(input=base_model.input,output=x)
-    model.summary()
+    #model.summary()
     main_input = Input(shape=(8, 224, 224, 3), dtype='float32', name='cnn_input')
 
     X = TimeDistributed(model)(main_input)
