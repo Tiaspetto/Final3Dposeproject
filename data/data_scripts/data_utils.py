@@ -323,7 +323,6 @@ def get_3d_train_batch(img_path, pose_path):
                     meta = scipy.io.loadmat(meta_name)
                     num_images = meta['num_images']
                     train_start_index = 41
-                    frames_index = data_start_index
                     X_data_quene = []
 
                     pose_file_index =  subaction_list * camera_list
