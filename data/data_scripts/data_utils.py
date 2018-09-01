@@ -325,7 +325,7 @@ def get_3d_train_batch(img_path, pose_path):
                     train_start_index = 41
                     X_data_quene = []
 
-                    pose_file_index =  subaction_list * camera_list
+                    pose_file_index =  subaction * camera
 
                     pose_file_name = "S{subject}/{action}{subindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[pose_file_index-1])
                     pose_file_path = pose_path + pose_file_name
@@ -378,11 +378,10 @@ def get_3d_Val_batch(img_path, pose_path):
                     path = img_path + folder_name
                     meta_name = path + '/matlab_meta.mat'
                     data_start_index = 36
-                    frames_index = data_start_index
                     pre_load_index = 1
                     X_data_quene = []
 
-                    pose_file_index =  subaction_list * camera_list
+                    pose_file_index =   subaction * camera
 
                     pose_file_name = "S{subject}/{action}{subindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[pose_file_index-1])
                     pose_file_path = pose_path + pose_file_name
