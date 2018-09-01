@@ -362,6 +362,7 @@ def get_3d_train_batch(img_path, pose_path):
 
                         train_start_index += 5
                         X_data = np.reshape(X_data, (1, 8, 224, 224, 3))
+                        Y_data = np.reshape(Y_data, (1, 42))
 
                         yield X_data, Y_data
 
@@ -413,6 +414,7 @@ def get_3d_Val_batch(img_path, pose_path):
                         data_start_index += 5
                         
                         X_data = np.reshape(X_data, (1, 8, 224, 224, 3))
+                        Y_data = np.reshape(Y_data, (1, 42))
                         yield X_data, Y_data
 
 
