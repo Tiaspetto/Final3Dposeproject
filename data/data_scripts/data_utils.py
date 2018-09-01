@@ -318,11 +318,6 @@ def get_3d_train_batch(img_path, pose_path):
                     folder_name = 's_{:02d}_act_{:02d}_subact_{:02d}_ca_{:02d}'.format(subject, action, subaction, camera)
                     path = img_path + folder_name
                     meta_name = path + '/matlab_meta.mat'
-                    if not os.path.exists(meta_name):
-                        print(meta_name, 'not exists!')
-                        continue  
-                    meta = scipy.io.loadmat(meta_name)
-                    num_images = meta['num_images']
                     train_start_index = 41
                     X_data_quene = []
 
@@ -335,6 +330,7 @@ def get_3d_train_batch(img_path, pose_path):
                         continue 
                     pose_data = human36_read_joints(pose_file_path)
                     pose_data = pose_data[0,0]
+                    num_images = np.shape(pose_data)[0]
 
 
 
@@ -356,7 +352,7 @@ def get_3d_train_batch(img_path, pose_path):
                                 break
 
 
-                        if train_start_index > (num_images - 7):
+                        if train_start_index > (num_images - 8):
                             break
                         X_data = np.array(X_data_quene)
                         Y_data = pose_data[train_start_index, :]
