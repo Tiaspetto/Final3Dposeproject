@@ -322,10 +322,8 @@ def get_3d_train_batch(img_path, pose_path):
                         continue  
                     meta = sio.loadmat(meta_name)
                     num_images = meta['num_images']
-                    data_start_index = 36
-                    train_start_index = 71
+                    train_start_index = 41
                     frames_index = data_start_index
-                    pre_load_index = 36
                     X_data_quene = []
 
                     pose_file_index =  subaction_list * camera_list
@@ -336,21 +334,23 @@ def get_3d_train_batch(img_path, pose_path):
                     pose_data = human36_read_joints(pose_file_path)
                     pose_data = pose_data[0,0]
 
-                    while pre_load_index < train_start_index:
-                        img_name = img_path + folder_name + '\\' + '{}_{:06d}.jpg'.format(folder_name, pre_load_index)
-                        img = cv2.imread(img_name)
-                        img = img * (2.0 / 255.0) - 1.0
-                        X_data_quene.append(img)
-                        pre_load_index += 5
+
 
                     while train_start_index < num_images:
-                        if len(X_data_quene) == 8:
-                            X_data_quene.pop(0)
-                        img_name = img_path + folder_name + '\\' + '{}_{:06d}.jpg'.format(folder_name, train_start_index)
-                        img = cv2.imread(img_name)
-                        img = img * (2.0 / 255.0) - 1.0
-                        X_data_quene.append(img)
+                        for i in range(0,8):
+                            if len(X_data_quene) == 8:
+                                X_data_quene.pop(0)
+                            img_name = img_path + folder_name + '\\' + '{}_{:06d}.jpg'.format(folder_name, pre_load_index)
+                            img = cv2.imread(img_name)
+                            img = img * (2.0 / 255.0) - 1.0
+                            X_data_quene.append(img)
+                            train_start_index += 5
+                            if train_start_index > num_images:
+                                break
 
+
+                        if len(X_data_quene) < 8:
+                            break
                         X_data = np.array(X_data_quene)
                         Y_data = pose_data[train_start_index, :]
                         Y_data = human36_pose_preprocess(Y_data)
