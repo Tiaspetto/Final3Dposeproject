@@ -302,7 +302,7 @@ def make_seq_model(model_input):
     X = Activation('tanh')(X)
     X = Conv3D(64, (3, 3, 3), name = "3D_conv_3", padding = 'same',  kernel_initializer = glorot_normal(seed=0))(X)
     X = Activation('tanh')(X)
-    X = Conv3D(128, (3, 3, 3), name = "3D_conv_4", padding = 'same',  kernel_initializer = glorot_normal(seed=0))(X)
+    X = Conv3D(64, (3, 3, 3), name = "3D_conv_4", padding = 'same',  kernel_initializer = glorot_normal(seed=0))(X)
     X = Activation('tanh')(X)
     X = Flatten()(X)
     X = Dense(1024, activation='linear', name='fc_'  + str('3D_pred_1024'), kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
