@@ -348,8 +348,8 @@ def train_3d_8s(base_model = '', ckpt_model = 'None'):
                                  workers=1)
 
 def train_3d_conv(base_model = ''):
-    img_path = ":/media/disk1/human3.6/H36M-images/images/"
-    pose_path = ":/media/disk1/human3.6/Annot/"
+    img_path = "/media/disk1/human3.6/H36M-images/images/"
+    pose_path = "/media/disk1/human3.6/Annot/"
     ckpt_path = 'log/3d_conv_weights-{val_loss:.4f}.hdf5'
     ckpt = tf.keras.callbacks.ModelCheckpoint(ckpt_path,
                                               monitor='val_loss',
