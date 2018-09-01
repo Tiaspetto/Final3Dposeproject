@@ -340,6 +340,8 @@ def get_3d_train_batch(img_path, pose_path):
 
                     while train_start_index < num_images:
                         for i in range(0,8):
+                            if train_start_index > num_images:
+                                break
                             if len(X_data_quene) == 8:
                                 X_data_quene.pop(0)
                             img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, train_start_index)
@@ -354,7 +356,7 @@ def get_3d_train_batch(img_path, pose_path):
                                 break
 
 
-                        if len(X_data_quene) < 8:
+                        if train_start_index > num_images:
                             break
                         X_data = np.array(X_data_quene)
                         Y_data = pose_data[train_start_index, :]
