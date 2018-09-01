@@ -356,7 +356,7 @@ def get_3d_train_batch(img_path, pose_path):
                                 break
 
 
-                        if train_start_index > num_images:
+                        if train_start_index > (num_images - 7):
                             break
                         X_data = np.array(X_data_quene)
                         Y_data = pose_data[train_start_index, :]
