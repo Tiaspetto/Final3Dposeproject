@@ -346,6 +346,8 @@ def get_3d_train_batch(img_path, pose_path):
                     pose_data = pose_data[0,0]
                     num_images = np.shape(pose_data)[0]
 
+                    num_images = min(num_images, 2801)
+
 
 
                     while train_start_index < num_images:
