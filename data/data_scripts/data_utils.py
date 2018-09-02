@@ -335,6 +335,7 @@ def get_3d_train_batch(img_path, pose_path):
 
                     if len(exist_path)<2:
                         print(exist_path, folder_name,'ecifficient path!!')
+                        assert(len(exist_path) == 2)
                     else:
                         pose_file_path = exist_path[subaction - 1]
 
