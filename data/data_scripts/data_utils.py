@@ -322,6 +322,12 @@ def get_3d_train_batch(img_path, pose_path):
                     train_start_index = 41
                     X_data_quene = []
                     
+                    if not os.path.exists(meta_name):
+                        print (meta_name, 'not exists!')
+                        continue
+
+                    meta = sio.loadmat(meta_name)
+                    num_images = meta['num_images']   
                     # query path
                     exist_path = [] 
                     for i in range(0,4):
@@ -346,11 +352,6 @@ def get_3d_train_batch(img_path, pose_path):
 
                     pose_data = human36_read_joints(pose_file_path)
                     pose_data = pose_data[0,0]
-                    num_images = np.shape(pose_data)[0]
-
-                    num_images = min(num_images, 2401)
-
-
 
                     while train_start_index < num_images:
                         for i in range(0,8):
