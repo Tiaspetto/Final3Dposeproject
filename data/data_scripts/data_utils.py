@@ -376,7 +376,7 @@ def get_3d_train_batch(img_path, pose_path):
                         if len(X_data_quene) <8:
                             break
                         X_data = np.array(X_data_quene)
-                        Y_data = pose_data[train_start_index, :]
+                        Y_data = pose_data[train_start_index-1, :]
                         Y_data = human36_pose_preprocess(Y_data)
 
                         train_start_index += 5
@@ -436,7 +436,7 @@ def get_3d_Val_batch(img_path, pose_path):
                         X_data_quene.append(img)
 
                         X_data = np.array(X_data_quene)
-                        Y_data = pose_data[data_start_index, :]
+                        Y_data = pose_data[data_start_index-1, :]
                         Y_data = human36_pose_preprocess(Y_data)
 
                         data_start_index += 5
