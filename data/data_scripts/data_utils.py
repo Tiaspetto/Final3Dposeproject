@@ -305,7 +305,7 @@ def human36_pose_preprocess(data):
 
 
 def get_3d_train_batch(img_path, pose_path):
-    action_s = {2:"Directions", 3:"Discussion", 4:"Eating", 5:"Greeting", 6:"Phoning", 7:"Posing", 8:"Purchases", 9:"Sitting", 10:"SittingDown", 11:"Smoking", 12:"TakingPhoto", 13:"Waiting", 14:"Walking", 15:"WalkingDog", 16:"WalkingTogether"}
+    action_s = {2:"Directions", 3:"Discussion", 4:"Eating", 5:"Greeting", 6:"Phoning", 7:"Posing", 8:"Purchases", 9:"Sitting", 10:"SittingDown", 11:"Smoking", 12:"TakingPhoto", 13:"Waiting", 14:"Walking", 15:"WalkingDog", 16:"WalkTogether"}
     camera_s = [".54138969", ".55011271", ".58860488", ".60457274"]
     sub_s = [" 1", " 2", " 3", ""]
     subject_list = [1, 5, 6, 7, 8, 9, 11]
@@ -379,7 +379,7 @@ def get_3d_train_batch(img_path, pose_path):
                         yield X_data, Y_data
 
 def get_3d_Val_batch(img_path, pose_path):
-    action_s = {2:"Directions", 3:"Discussion", 4:"Eating", 5:"Greeting", 6:"Phoning", 7:"Posing", 8:"Purchases", 9:"Sitting", 10:"SittingDown", 11:"Smoking", 12:"TakingPhoto", 13:"Waiting", 14:"Walking", 15:"WalkingDog", 16:"WalkingTogether"}
+    action_s = {2:"Directions", 3:"Discussion", 4:"Eating", 5:"Greeting", 6:"Phoning", 7:"Posing", 8:"Purchases", 9:"Sitting", 10:"SittingDown", 11:"Smoking", 12:"TakingPhoto", 13:"Waiting", 14:"Walking", 15:"WalkingDog", 16:"WalkTogether"}
     camera_s = [".54138969", ".55011271", ".58860488", ".60457274"]
     sub_s = [" 1", " 2", " 3", ""]
     subject_list = [1, 5, 6, 7, 8, 9, 11]
