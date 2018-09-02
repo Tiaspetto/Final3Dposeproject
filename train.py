@@ -360,11 +360,11 @@ def train_3d_conv(base_model = ''):
     adam = optimizers.adam(lr=float("1e-4"))
     model.compile(optimizer=adam, loss=euc_joint_dist_loss,
                   metrics= [euc_joint_metrics_dist_keras, metrics_pckh])
-    clr = CyclicLR(base_lr = float("1e-7"), max_lr = float("1e-4"), step_size = 45155, mode = 'triangular')
+    clr = CyclicLR(base_lr = float("1e-7"), max_lr = float("1e-4"), step_size = 41000, mode = 'triangular')
     model.summary()
 
     result = model.fit_generator(generator=get_3d_train_batch(img_path, pose_path),
-                                 steps_per_epoch=45155,
+                                 steps_per_epoch=41000,
                                  callbacks=[ckpt, clr],
                                  epochs=60000, verbose=1,
                                  validation_data=get_3d_Val_batch(img_path, pose_path),
