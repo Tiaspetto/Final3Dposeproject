@@ -326,7 +326,7 @@ def get_3d_train_batch(img_path, pose_path):
                         print (meta_name, 'not exists!')
                         continue
 
-                    meta = sio.loadmat(meta_name)
+                    meta = scipy.io.loadmat(meta_name)
                     num_images = meta['num_images']   
                     # query path
                     exist_path = [] 
