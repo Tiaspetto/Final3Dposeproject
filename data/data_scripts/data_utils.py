@@ -348,7 +348,7 @@ def get_3d_train_batch(img_path, pose_path):
                     pose_data = pose_data[0,0]
                     num_images = np.shape(pose_data)[0]
 
-                    num_images = min(num_images, 2801)
+                    num_images = min(num_images, 2401)
 
 
 
@@ -361,16 +361,16 @@ def get_3d_train_batch(img_path, pose_path):
                             img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, train_start_index)
                             if not os.path.exists(img_name):
                                 print(pose_file_path, num_images, img_name, 'not exists!')
-                                continue 
-                            img = cv2.imread(img_name)
-                            img = img * (2.0 / 255.0) - 1.0
-                            X_data_quene.append(img)
+                                continue
+                            else: 
+                                img = cv2.imread(img_name)
+                                img = img * (2.0 / 255.0) - 1.0
+                                X_data_quene.append(img)
                             train_start_index += 5
-                            if train_start_index > num_images:
-                                break
 
 
-                        if train_start_index > (num_images - 8):
+
+                        if len(X_data_quene) <8:
                             break
                         X_data = np.array(X_data_quene)
                         Y_data = pose_data[train_start_index, :]
