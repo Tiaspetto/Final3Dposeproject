@@ -328,7 +328,7 @@ def get_3d_train_batch(img_path, pose_path):
                         pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[i], camindex = camera_s[camera-1])
                         pose_file_path = pose_path + pose_file_name
                         if os.path.exists(pose_file_path):
-                            exist_path.append()
+                            exist_path.append(pose_file_path)
 
 
                     pose_file_path = exist_path[subaction - 1]
@@ -395,7 +395,7 @@ def get_3d_Val_batch(img_path, pose_path):
                         pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[i], camindex = camera_s[camera-1])
                         pose_file_path = pose_path + pose_file_name
                         if os.path.exists(pose_file_path):
-                            exist_path.append()
+                            exist_path.append(pose_file_path)
 
 
                     pose_file_path = exist_path[subaction - 1]
