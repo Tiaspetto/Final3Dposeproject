@@ -327,12 +327,12 @@ def get_3d_train_batch(img_path, pose_path):
                     for i in range(0,4):
                         pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[i], camindex = camera_s[camera-1])
                         pose_file_path = pose_path + pose_file_name
-                        if os.path.exists(pose_file_path)
+                        if os.path.exists(pose_file_path):
                             exist_path.append()
 
 
                     pose_file_path = exist_path[subaction - 1]
-                    if not os.path.exists(pose_file_path)
+                    if not os.path.exists(pose_file_path):
                         print(pose_file_path, 'not exists!')
                     pose_data = human36_read_joints(pose_file_path)
                     pose_data = pose_data[0,0]
@@ -389,17 +389,17 @@ def get_3d_Val_batch(img_path, pose_path):
                     pre_load_index = 1
                     X_data_quene = []
                     # query path
-                    
+
                     exist_path = [] 
                     for i in range(0,4):
                         pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[i], camindex = camera_s[camera-1])
                         pose_file_path = pose_path + pose_file_name
-                        if os.path.exists(pose_file_path)
+                        if os.path.exists(pose_file_path):
                             exist_path.append()
 
 
                     pose_file_path = exist_path[subaction - 1]
-                    if not os.path.exists(pose_file_path)
+                    if not os.path.exists(pose_file_path):
                         print(pose_file_path, 'not exists!')
                     
                     pose_data = human36_read_joints(pose_file_path)
