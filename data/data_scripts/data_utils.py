@@ -330,7 +330,7 @@ def get_3d_train_batch(img_path, pose_path):
                     num_images = meta['num_images']  
 
                     num_images = min(num_images, 2401)
-                     
+
                     # query path
                     exist_path = [] 
                     for i in range(0,4):
@@ -380,7 +380,7 @@ def get_3d_train_batch(img_path, pose_path):
                             break
                         X_data = np.array(X_data_quene)
                         if train_start_index > np.shape(pose_data)[0]:
-                            print(pose_file_path, folder_name)
+                            print(pose_file_path, folder_name, train_start_index, np.shape(pose_data)[0])
 
                         Y_data = pose_data[train_start_index-1, :]
                         Y_data = human36_pose_preprocess(Y_data)
