@@ -379,7 +379,7 @@ def get_3d_train_batch(img_path, pose_path):
                         if len(X_data_quene) <8:
                             break
                         X_data = np.array(X_data_quene)
-                        if data_start_index > np.shape(pose_data)[0]:
+                        if train_start_index > np.shape(pose_data)[0]:
                             print(pose_file_path, folder_name)
 
                         Y_data = pose_data[train_start_index-1, :]
