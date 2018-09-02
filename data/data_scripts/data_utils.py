@@ -307,7 +307,7 @@ def human36_pose_preprocess(data):
 def get_3d_train_batch(img_path, pose_path):
     action_s = {2:"Directions", 3:"Discussion", 4:"Eating", 5:"Greeting", 6:"Phoning", 7:"Posing", 8:"Purchases", 9:"Sitting", 10:"SittingDown", 11:"Smoking", 12:"TakingPhoto", 13:"Waiting", 14:"Walking", 15:"WalkingDog", 16:"WalkingTogether"}
     camera_s = [".54138969", ".55011271", ".58860488", ".60457274"]
-    sub_s = [" 1", "", " 2"]
+    sub_s = [" 1", " 2", " 3", ""]
     subject_list = [1, 5, 6, 7, 8, 9, 11]
     action_list = np.arange(2, 17)
     subaction_list = np.arange(1, 3)
@@ -321,16 +321,19 @@ def get_3d_train_batch(img_path, pose_path):
                     meta_name = path + '/matlab_meta.mat'
                     train_start_index = 41
                     X_data_quene = []
-
-                    pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[subaction-1], camindex = camera_s[camera-1])
-                    pose_file_path = pose_path + pose_file_name
-                    if not os.path.exists(pose_file_path):
-                        print(pose_file_path, 'not exists, find next !!!!')
-                        pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[2], camindex = camera_s[camera-1])
+                    
+                    # query path
+                    exist_path = [] 
+                    for i in range(0,4):
+                        pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[i], camindex = camera_s[camera-1])
                         pose_file_path = pose_path + pose_file_name
-                        if not os.path.exists(pose_file_path):
-                            print(pose_file_path, 'not exists!')
-                            continue 
+                        if os.path.exists(pose_file_path)
+                            exist_path.append()
+
+
+                    pose_file_path = exist_path[subaction - 1]
+                    if not os.path.exists(pose_file_path)
+                        print(pose_file_path, 'not exists!')
                     pose_data = human36_read_joints(pose_file_path)
                     pose_data = pose_data[0,0]
                     num_images = np.shape(pose_data)[0]
@@ -370,7 +373,7 @@ def get_3d_train_batch(img_path, pose_path):
 def get_3d_Val_batch(img_path, pose_path):
     action_s = {2:"Directions", 3:"Discussion", 4:"Eating", 5:"Greeting", 6:"Phoning", 7:"Posing", 8:"Purchases", 9:"Sitting", 10:"SittingDown", 11:"Smoking", 12:"TakingPhoto", 13:"Waiting", 14:"Walking", 15:"WalkingDog", 16:"WalkingTogether"}
     camera_s = [".54138969", ".55011271", ".58860488", ".60457274"]
-    sub_s = [" 1", "", " 2"]
+    sub_s = [" 1", " 2", " 3", ""]
     subject_list = [1, 5, 6, 7, 8, 9, 11]
     action_list = np.arange(2, 17)
     subaction_list = np.arange(1, 3)
@@ -385,17 +388,19 @@ def get_3d_Val_batch(img_path, pose_path):
                     data_start_index = 36
                     pre_load_index = 1
                     X_data_quene = []
-
-                    pose_file_index =   subaction * camera
-
-                    pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[subaction-1], camindex = camera_s[camera-1])
-                    pose_file_path = pose_path + pose_file_name
-                    if not os.path.exists(pose_file_path):
-                        pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[2], camindex = camera_s[camera])
+                    # query path
+                    
+                    exist_path = [] 
+                    for i in range(0,4):
+                        pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[i], camindex = camera_s[camera-1])
                         pose_file_path = pose_path + pose_file_name
-                        if not os.path.exists(pose_file_path):
-                            print(pose_file_path, 'not exists!')
-                            continue 
+                        if os.path.exists(pose_file_path)
+                            exist_path.append()
+
+
+                    pose_file_path = exist_path[subaction - 1]
+                    if not os.path.exists(pose_file_path)
+                        print(pose_file_path, 'not exists!')
                     
                     pose_data = human36_read_joints(pose_file_path)
                     pose_data = pose_data[0,0]
