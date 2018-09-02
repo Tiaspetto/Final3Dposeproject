@@ -419,10 +419,19 @@ def get_3d_Val_batch(img_path, pose_path):
                             exist_path.append(pose_file_path)
 
 
-                    pose_file_path = exist_path[subaction - 1]
+                    pose_file_path = ""
+
+                    if len(exist_path)!=2:
+                        print(exist_path, folder_name,'ecifficient path!!')
+                        #assert len(exist_path) < 2, folder_name
+                        continue
+                    else:
+                        pose_file_path = exist_path[subaction - 1]
+
                     if not os.path.exists(pose_file_path):
-                        print(pose_file_path, 'not exists!')
-                    
+                        print(pose_file_path, subaction , 'not exists!')
+
+
                     pose_data = human36_read_joints(pose_file_path)
                     pose_data = pose_data[0,0]
 
