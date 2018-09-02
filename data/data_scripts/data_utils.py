@@ -354,10 +354,12 @@ def get_3d_train_batch(img_path, pose_path):
 
                     while train_start_index < num_images:
                         for i in range(0,8):
-                            if train_start_index > num_images:
-                                break
                             if len(X_data_quene) == 8:
                                 X_data_quene.pop(0)
+
+                            train_start_index += 5
+                            if train_start_index > num_images:
+                                break
                             img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, train_start_index)
                             if not os.path.exists(img_name):
                                 print(pose_file_path, num_images, img_name, 'not exists!')
@@ -366,7 +368,7 @@ def get_3d_train_batch(img_path, pose_path):
                                 img = cv2.imread(img_name)
                                 img = img * (2.0 / 255.0) - 1.0
                                 X_data_quene.append(img)
-                            train_start_index += 5
+                            
 
 
 
