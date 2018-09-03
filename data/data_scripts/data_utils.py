@@ -349,6 +349,7 @@ def get_3d_train_batch(img_path, pose_path):
 
                     if not os.path.exists(pose_file_path):
                         print(pose_file_path, subaction , 'not exists!')
+                        continue
 
 
                     pose_data = human36_read_joints(pose_file_path)
