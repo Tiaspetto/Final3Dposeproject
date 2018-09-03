@@ -448,17 +448,17 @@ def get_3d_Val_batch(img_path, pose_path):
                                 img = img * (2.0 / 255.0) - 1.0
                                 X_data_quene.append(img)
 
-                        if len(X_data_quene) <8:
-                            break
-                        X_data = np.array(X_data_quene)
+                    if len(X_data_quene) <8:
+                        continue
+                    X_data = np.array(X_data_quene)
 
 
-                        Y_data = pose_data[data_start_index-1, :]
-                        Y_data = human36_pose_preprocess(Y_data)
+                    Y_data = pose_data[data_start_index-1, :]
+                    Y_data = human36_pose_preprocess(Y_data)
                         
-                        X_data = np.reshape(X_data, (1, 8, 224, 224, 3))
-                        Y_data = np.reshape(Y_data, (1, 42))
-                        yield X_data, Y_data
+                    X_data = np.reshape(X_data, (1, 8, 224, 224, 3))
+                    Y_data = np.reshape(Y_data, (1, 42))
+                    yield X_data, Y_data
 
 
 
