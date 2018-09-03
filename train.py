@@ -368,7 +368,7 @@ def train_3d_conv(base_model = ''):
                                  callbacks=[ckpt, clr],
                                  epochs=60000, verbose=1,
                                  validation_data=get_3d_Val_batch(img_path, pose_path),
-                                 validation_steps=840,
+                                 validation_steps=839,
                                  workers=1)
 
 
