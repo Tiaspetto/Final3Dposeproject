@@ -404,7 +404,7 @@ def main(argv):
     elif argv[1] == "conv_3d":
         if len(argv) == 3:
             train_3d_conv(argv[2], "None")
-        elif len(argv) == 4::
+        elif len(argv) == 4:
             train_3d_conv(argv[2], argv[3])
     else:
         print("you got run argv!!")
