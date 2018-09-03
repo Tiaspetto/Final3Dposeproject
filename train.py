@@ -347,7 +347,7 @@ def train_3d_8s(base_model = '', ckpt_model = 'None'):
                                  validation_steps=593,
                                  workers=1)
 
-def train_3d_conv(base_model = ''):
+def train_3d_conv(base_model = '', ckpt_model = "None" ):
     img_path = "/media/disk1/human3.6/H36M-images/images/"
     pose_path = "/media/disk1/human3.6/Annot/"
     ckpt_path = 'log/3d_conv_weights-{val_loss:.4f}.hdf5'
@@ -362,6 +362,9 @@ def train_3d_conv(base_model = ''):
                   metrics= [euc_joint_metrics_dist_keras, metrics_pckh])
     clr = CyclicLR(base_lr = float("1e-7"), max_lr = float("1e-4"), step_size = 41000, mode = 'triangular')
     model.summary()
+
+    if ckpt_model != 'None':
+        model.load_weights(ckpt_model)
 
     result = model.fit_generator(generator=get_3d_train_batch(img_path, pose_path),
                                  steps_per_epoch=41000,
@@ -399,7 +402,10 @@ def main(argv):
         else:
             print("WRONG ARGS NUM")
     elif argv[1] == "conv_3d":
-        train_3d_conv(argv[2])
+        if len(argv) == 3:
+            train_3d_conv(argv[2], "None")
+        elif len(argv) == 4::
+            train_3d_conv(argv[2], argv[3])
     else:
         print("you got run argv!!")
     
