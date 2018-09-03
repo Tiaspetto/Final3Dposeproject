@@ -385,14 +385,13 @@ def get_3d_train_batch(img_path, pose_path):
                         Y_data = pose_data[train_start_index-1, :]
                         Y_data = human36_pose_preprocess(Y_data)
 
-                        train_start_index += 5
                         X_data = np.reshape(X_data, (1, 8, 224, 224, 3))
                         Y_data = np.reshape(Y_data, (1, 42))
 
                         yield X_data, Y_data
 
 def get_3d_Val_batch(img_path, pose_path):
-    action_s = {2:"Directions", 3:"Discussion", 4:"Eating", 5:"Greeting", 6:"Phoning", 7:"Posing", 8:"Purchases", 9:"Sitting", 10:"SittingDown", 11:"Smoking", 12:"TakingPhoto", 13:"Waiting", 14:"Walking", 15:"WalkingDog", 16:"WalkTogether"}
+    action_s = {2:"Directions", 3:"Discussion", 4:"Eating", 5:"Greeting", 6:"Phoning", 7:"Posing", 8:"Purchases", 9:"Sitting", 10:"SittingDown", 11:"Smoking", 12:"Photo", 13:"Waiting", 14:"Walking", 15:"WalkDog", 16:"WalkTogether"}
     camera_s = [".54138969", ".55011271", ".58860488", ".60457274"]
     sub_s = [" 1", " 2", " 3", ""]
     subject_list = [1, 5, 6, 7, 8, 9, 11]
@@ -406,8 +405,7 @@ def get_3d_Val_batch(img_path, pose_path):
                     folder_name = 's_{:02d}_act_{:02d}_subact_{:02d}_ca_{:02d}'.format(subject, action, subaction, camera)
                     path = img_path + folder_name
                     meta_name = path + '/matlab_meta.mat'
-                    data_start_index = 36
-                    pre_load_index = 1
+                    data_start_index = 1
                     X_data_quene = []
                     # query path
 
@@ -435,26 +433,28 @@ def get_3d_Val_batch(img_path, pose_path):
                     pose_data = human36_read_joints(pose_file_path)
                     pose_data = pose_data[0,0]
 
-                    while pre_load_index < data_start_index:
-                        img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, pre_load_index)
-                        img = cv2.imread(img_name)
-                        img = img * (2.0 / 255.0) - 1.0
-                        X_data_quene.append(img)
-                        pre_load_index += 5
+                    while data_start_index < 41:
+                        for i in range(0,8):
+                            if len(X_data_quene) == 8:
+                                X_data_quene.pop(0)
 
-                    while data_start_index <= 36:
-                        if len(X_data_quene) == 8:
-                            X_data_quene.pop(0)
-                        img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, data_start_index)
-                        img = cv2.imread(img_name)
-                        img = img * (2.0 / 255.0) - 1.0
-                        X_data_quene.append(img)
+                            data_start_index += 5
+                            img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, data_start_index)
+                            if not os.path.exists(img_name):
+                                print(pose_file_path, num_images, img_name, 'not exists!')
+                                continue
+                            else: 
+                                img = cv2.imread(img_name)
+                                img = img * (2.0 / 255.0) - 1.0
+                                X_data_quene.append(img)
 
+                        if len(X_data_quene) <8:
+                            break
                         X_data = np.array(X_data_quene)
+
+
                         Y_data = pose_data[data_start_index-1, :]
                         Y_data = human36_pose_preprocess(Y_data)
-
-                        data_start_index += 5
                         
                         X_data = np.reshape(X_data, (1, 8, 224, 224, 3))
                         Y_data = np.reshape(Y_data, (1, 42))
