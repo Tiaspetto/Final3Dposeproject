@@ -441,7 +441,7 @@ def get_3d_Val_batch(img_path, pose_path):
                             data_start_index += 5
                             img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, data_start_index)
                             if not os.path.exists(img_name):
-                                print(pose_file_path, num_images, img_name, 'not exists!')
+                                print(pose_file_path, img_name, 'not exists!')
                                 continue
                             else: 
                                 img = cv2.imread(img_name)
