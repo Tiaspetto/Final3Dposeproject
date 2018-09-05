@@ -312,84 +312,85 @@ def get_3d_train_batch(img_path, pose_path):
     action_list = np.arange(2, 17)
     subaction_list = np.arange(1, 3)
     camera_list = np.arange(1, 5)
-    for subject in subject_list:
-        for action in action_list:
-            for subaction in subaction_list:
-                for camera in camera_list:
-                    folder_name = 's_{:02d}_act_{:02d}_subact_{:02d}_ca_{:02d}'.format(subject, action, subaction, camera)
-                    path = img_path + folder_name
-                    meta_name = path + '/matlab_meta.mat'
-                    train_start_index = 41
-                    X_data_quene = []
-                    
-                    if not os.path.exists(meta_name):
-                        print (meta_name, 'not exists!')
-                        continue
+    while 1:
+        for subject in subject_list:
+            for action in action_list:
+                for subaction in subaction_list:
+                    for camera in camera_list:
+                        folder_name = 's_{:02d}_act_{:02d}_subact_{:02d}_ca_{:02d}'.format(subject, action, subaction, camera)
+                        path = img_path + folder_name
+                        meta_name = path + '/matlab_meta.mat'
+                        train_start_index = 41
+                        X_data_quene = []
+                        
+                        if not os.path.exists(meta_name):
+                            print (meta_name, 'not exists!')
+                            continue
 
-                    meta = scipy.io.loadmat(meta_name)
-                    num_images = meta['num_images']  
+                        meta = scipy.io.loadmat(meta_name)
+                        num_images = meta['num_images']  
 
-                    # query path
-                    exist_path = [] 
-                    for i in range(0,4):
-                        pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[i], camindex = camera_s[camera-1])
-                        pose_file_path = pose_path + pose_file_name
-                        if os.path.exists(pose_file_path):
-                            exist_path.append(pose_file_path)
-
-
-                    pose_file_path = ""
-
-                    if len(exist_path)!=2:
-                        print(exist_path, folder_name,'ecifficient path!!')
-                        #assert len(exist_path) < 2, folder_name
-                        continue
-                    else:
-                        pose_file_path = exist_path[subaction - 1]
-
-                    if not os.path.exists(pose_file_path):
-                        print(pose_file_path, subaction , 'not exists!')
-                        continue
+                        # query path
+                        exist_path = [] 
+                        for i in range(0,4):
+                            pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[i], camindex = camera_s[camera-1])
+                            pose_file_path = pose_path + pose_file_name
+                            if os.path.exists(pose_file_path):
+                                exist_path.append(pose_file_path)
 
 
-                    pose_data = human36_read_joints(pose_file_path)
-                    pose_data = pose_data[0,0]
+                        pose_file_path = ""
 
-                    num_images = min(num_images, np.shape(pose_data)[0])
+                        if len(exist_path)!=2:
+                            print(exist_path, folder_name,'ecifficient path!!')
+                            #assert len(exist_path) < 2, folder_name
+                            continue
+                        else:
+                            pose_file_path = exist_path[subaction - 1]
 
-                    while train_start_index < num_images:
-                        for i in range(0,8):
-                            if len(X_data_quene) == 8:
-                                X_data_quene.pop(0)
+                        if not os.path.exists(pose_file_path):
+                            print(pose_file_path, subaction , 'not exists!')
+                            continue
 
-                            train_start_index += 5
-                            if train_start_index > num_images:
+
+                        pose_data = human36_read_joints(pose_file_path)
+                        pose_data = pose_data[0,0]
+
+                        num_images = min(num_images, np.shape(pose_data)[0])
+
+                        while train_start_index < num_images:
+                            for i in range(0,8):
+                                if len(X_data_quene) == 8:
+                                    X_data_quene.pop(0)
+
+                                train_start_index += 5
+                                if train_start_index > num_images:
+                                    break
+                                img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, train_start_index)
+                                if not os.path.exists(img_name):
+                                    print(pose_file_path, num_images, img_name, 'not exists!')
+                                    continue
+                                else: 
+                                    img = cv2.imread(img_name)
+                                    img = img * (2.0 / 255.0) - 1.0
+                                    X_data_quene.append(img)
+                                
+
+
+
+                            if len(X_data_quene) <8:
                                 break
-                            img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, train_start_index)
-                            if not os.path.exists(img_name):
-                                print(pose_file_path, num_images, img_name, 'not exists!')
-                                continue
-                            else: 
-                                img = cv2.imread(img_name)
-                                img = img * (2.0 / 255.0) - 1.0
-                                X_data_quene.append(img)
-                            
+                            X_data = np.array(X_data_quene)
+                            if train_start_index > np.shape(pose_data)[0]:
+                                print(pose_file_path, folder_name, train_start_index, np.shape(pose_data)[0])
 
+                            Y_data = pose_data[train_start_index-1, :]
+                            Y_data = human36_pose_preprocess(Y_data)
 
+                            X_data = np.reshape(X_data, (1, 8, 224, 224, 3))
+                            Y_data = np.reshape(Y_data, (1, 42))
 
-                        if len(X_data_quene) <8:
-                            break
-                        X_data = np.array(X_data_quene)
-                        if train_start_index > np.shape(pose_data)[0]:
-                            print(pose_file_path, folder_name, train_start_index, np.shape(pose_data)[0])
-
-                        Y_data = pose_data[train_start_index-1, :]
-                        Y_data = human36_pose_preprocess(Y_data)
-
-                        X_data = np.reshape(X_data, (1, 8, 224, 224, 3))
-                        Y_data = np.reshape(Y_data, (1, 42))
-
-                        yield X_data, Y_data
+                            yield X_data, Y_data
 
 def get_3d_Val_batch(img_path, pose_path):
     action_s = {2:"Directions", 3:"Discussion", 4:"Eating", 5:"Greeting", 6:"Phoning", 7:"Posing", 8:"Purchases", 9:"Sitting", 10:"SittingDown", 11:"Smoking", 12:"Photo", 13:"Waiting", 14:"Walking", 15:"WalkDog", 16:"WalkTogether"}
@@ -399,67 +400,68 @@ def get_3d_Val_batch(img_path, pose_path):
     action_list = np.arange(2, 17)
     subaction_list = np.arange(1, 3)
     camera_list = np.arange(1, 5)
-    for subject in subject_list:
-        for action in action_list:
-            for subaction in subaction_list:
-                for camera in camera_list:
-                    folder_name = 's_{:02d}_act_{:02d}_subact_{:02d}_ca_{:02d}'.format(subject, action, subaction, camera)
-                    path = img_path + folder_name
-                    meta_name = path + '/matlab_meta.mat'
-                    data_start_index = 1
-                    X_data_quene = []
-                    # query path
+    while 1:
+        for subject in subject_list:
+            for action in action_list:
+                for subaction in subaction_list:
+                    for camera in camera_list:
+                        folder_name = 's_{:02d}_act_{:02d}_subact_{:02d}_ca_{:02d}'.format(subject, action, subaction, camera)
+                        path = img_path + folder_name
+                        meta_name = path + '/matlab_meta.mat'
+                        data_start_index = 1
+                        X_data_quene = []
+                        # query path
 
-                    exist_path = [] 
-                    for i in range(0,4):
-                        pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[i], camindex = camera_s[camera-1])
-                        pose_file_path = pose_path + pose_file_name
-                        if os.path.exists(pose_file_path):
-                            exist_path.append(pose_file_path)
-
-
-                    pose_file_path = ""
-
-                    if len(exist_path)!=2:
-                        print(exist_path, folder_name,'ecifficient path!!')
-                        #assert len(exist_path) < 2, folder_name
-                        continue
-                    else:
-                        pose_file_path = exist_path[subaction - 1]
-
-                    if not os.path.exists(pose_file_path):
-                        print(pose_file_path, subaction , 'not exists!')
+                        exist_path = [] 
+                        for i in range(0,4):
+                            pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[i], camindex = camera_s[camera-1])
+                            pose_file_path = pose_path + pose_file_name
+                            if os.path.exists(pose_file_path):
+                                exist_path.append(pose_file_path)
 
 
-                    pose_data = human36_read_joints(pose_file_path)
-                    pose_data = pose_data[0,0]
+                        pose_file_path = ""
 
-                    while data_start_index < 41:
-                        for i in range(0,8):
-                            if len(X_data_quene) == 8:
-                                X_data_quene.pop(0)
+                        if len(exist_path)!=2:
+                            print(exist_path, folder_name,'ecifficient path!!')
+                            #assert len(exist_path) < 2, folder_name
+                            continue
+                        else:
+                            pose_file_path = exist_path[subaction - 1]
 
-                            data_start_index += 5
-                            img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, data_start_index)
-                            if not os.path.exists(img_name):
-                                print(pose_file_path, img_name, 'not exists!')
-                                continue
-                            else: 
-                                img = cv2.imread(img_name)
-                                img = img * (2.0 / 255.0) - 1.0
-                                X_data_quene.append(img)
-
-                    if len(X_data_quene) <8:
-                        continue
-                    X_data = np.array(X_data_quene)
+                        if not os.path.exists(pose_file_path):
+                            print(pose_file_path, subaction , 'not exists!')
 
 
-                    Y_data = pose_data[data_start_index-1, :]
-                    Y_data = human36_pose_preprocess(Y_data)
-                        
-                    X_data = np.reshape(X_data, (1, 8, 224, 224, 3))
-                    Y_data = np.reshape(Y_data, (1, 42))
-                    yield X_data, Y_data
+                        pose_data = human36_read_joints(pose_file_path)
+                        pose_data = pose_data[0,0]
+
+                        while data_start_index < 41:
+                            for i in range(0,8):
+                                if len(X_data_quene) == 8:
+                                    X_data_quene.pop(0)
+
+                                data_start_index += 5
+                                img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, data_start_index)
+                                if not os.path.exists(img_name):
+                                    print(pose_file_path, img_name, 'not exists!')
+                                    continue
+                                else: 
+                                    img = cv2.imread(img_name)
+                                    img = img * (2.0 / 255.0) - 1.0
+                                    X_data_quene.append(img)
+
+                        if len(X_data_quene) <8:
+                            continue
+                        X_data = np.array(X_data_quene)
+
+
+                        Y_data = pose_data[data_start_index-1, :]
+                        Y_data = human36_pose_preprocess(Y_data)
+                            
+                        X_data = np.reshape(X_data, (1, 8, 224, 224, 3))
+                        Y_data = np.reshape(Y_data, (1, 42))
+                        yield X_data, Y_data
 
 
 
