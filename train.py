@@ -92,7 +92,7 @@ def shuffle(index_array):
 
 
 def euc_dist_keras(y_true, y_pred):
-    return K.sqrt(K.sum(K.square(y_true - y_pred), axis=-1, keepdims=True))
+    return K.sum(K.sqrt(K.sum(K.square(y_true - y_pred), axis=2)), axis =1)
 
 
 def calc_parant(y_true, y_pred):
@@ -194,9 +194,10 @@ def train_2d():
 
     model = PoseNet_50(input_shape=(224, 224, 3))
     adadelta = optimizers.Adadelta(lr = 0.05, rho = 0.9, decay = 0.0)
-    clr = CyclicLR(base_lr = float("3.3e-4"), max_lr = 0.05, step_size = 1706, mode = 'triangular')
+    clr = CyclicLR(base_lr = float("3.3e-4"), max_lr = 0.05, step_size = 1900, mode = 'triangular')
     model.compile(optimizer = adadelta, loss = euc_dist_keras,
                   metrics=['mae'])
+    model.load_weights('D:/dissertation/log/weights-118.9920.hdf5')
     #lrate = LearningRateScheduler(step_decay)
     result = model.fit_generator(generator=pose2d_get_train_batch(index_array, 8),
                                  steps_per_epoch=238,
@@ -229,7 +230,7 @@ def feature_train_2d():
     model.compile(optimizer = adadelta, loss = euc_dist_keras,
                   metrics=['mae'])
     #lrate = LearningRateScheduler(step_decay)
-    clr = CyclicLR(base_lr = float("3.3e-4"), max_lr = 0.05, step_size = 1706, mode = 'triangular')
+    clr = CyclicLR(base_lr = float("3.3e-4"), max_lr = 0.001, step_size = 1900, mode = 'triangular')
     result = model.fit_generator(generator=pose2d_get_further_train_batch(train_array, 8, True),
                                  steps_per_epoch=2241,
                                  callbacks=[ckpt, clr],
@@ -407,12 +408,11 @@ def main(argv):
         elif len(argv) == 4:
             train_3d_conv(argv[2], argv[3])
     else:
-        print("you got run argv!!")
+        print("you got wrong argv!!")
     
 if __name__ == '__main__':
     main(sys.argv)
-    # y_pred = K.variable(K.zeros((8, 14, 3)))
-    # y_true = K.variable(K.ones((8, 14, 3)))
+    
     # #result = euc_joint_dist_loss(y_pred, y_true)
     # pckh = metrics_pckh(y_pred, y_true)
     # sess = K.get_session()

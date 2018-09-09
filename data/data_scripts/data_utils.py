@@ -10,7 +10,7 @@ import math
 from matplotlib.pyplot import imshow
 import csv
 body_part = 14
-sigma = 32.0
+sigma = 2.0
 
 lsp_img_source_path = "/data/lsp_dataset/images/"
 heatmap_path = "/data/lsp_dataset/heat/"
@@ -53,6 +53,7 @@ def put_heatmap(heatmap, plane_idx, center):
             heatmap[plane_idx][y][x] = min(heatmap[plane_idx][y][x], 1.0)
 
 
+
 def get_heatmap(target_size, joint_list, height, width):
     heatmap = np.zeros((body_part, height, width), dtype=np.float32)
 
@@ -78,6 +79,55 @@ def get_heatmap(target_size, joint_list, height, width):
         result = np.asarray(result)
     return result.astype(np.float32)
 
+def debug_put_heatmap(heatmap, plane_idx, center):
+    #print(plane_idx, center, sigma)
+    center_x, center_y = center
+    _, height, width = heatmap.shape[:3]
+
+    th = 4.6052
+    delta = math.sqrt(th * 2)
+
+    x0 = int(max(0, center_x - delta * sigma))
+    y0 = int(max(0, center_y - delta * sigma))
+
+    x1 = int(min(width, center_x + delta * sigma))
+    y1 = int(min(height, center_y + delta * sigma))
+
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            d = (x - center_x) ** 2 + (y - center_y) ** 2
+            exp = d / 2.0 / sigma / sigma
+            if exp > th:
+                continue
+            heatmap[plane_idx][y][x] = max(
+                heatmap[plane_idx][y][x], math.exp(-exp))
+            heatmap[plane_idx][y][x] = min(heatmap[plane_idx][y][x], 1.0)
+
+
+def debug_get_heatmap(target_size, joint_list, height, width):
+    heatmap = np.zeros((15, height, width), dtype=np.float32)
+
+    #print(np.shape(heatmap))test_joints
+    count = 0
+    point = []
+    for i in range(body_part):
+        debug_put_heatmap(heatmap, i, (joint_list[0][i], joint_list[1][i]))
+
+        heatmap = heatmap.transpose((1, 2, 0))
+
+        #background
+        #heatmap[:, :, -1] = np.clip(1 - np.amax(heatmap, axis=2), 0.0, 1.0)
+
+        heatmap = heatmap.transpose((2, 0, 1))
+
+        result = []
+        if target_size:
+            for i in range(body_part):
+                result.append(cv2.resize(
+                    heatmap[i], target_size, interpolation=cv2.INTER_LINEAR))
+
+        result = np.asarray(result)
+    return result.astype(np.float32)
 
 def re_orgnize(samples):
     x = []
@@ -115,6 +165,10 @@ def pre_processing_lsp(file_name, picture_ids, target_size, debug_flag=False):
         height, width = get_picture_info(picid)
         sample = joints[:, :, picid-1]
         heat = get_heatmap(target_size, sample, height, width)
+
+        if debug_flag == True:
+            print("debug")
+            heat = debug_get_heatmap(target_size, sample, height, width)
 
         print(np.shape(heat))
 
@@ -159,14 +213,15 @@ def read_image(picid, dataset = "lsp", isTrain = True):
 
     img = cv2.resize(img, (224, 224), interpolation=cv2.INTER_LINEAR)
     
-    img = img * (2.0 / 255.0) - 1.0   
+    if dataset == "ECCV":
+        img = img * (2.0 / 255.0) - 1.0   
     #print(np.shape(img))
     return img
 
 
 def debug_read_heat_info(picid):
     heat_path = "{root_path}{data_path}im{frames}.mat"
-    heat_path = heat_path.format(root_path = os.path.abspath('..'), data_path = "/lsp_dataset/heat/", frames=str(picid).zfill(4))
+    heat_path = heat_path.format(root_path = os.path.abspath('.'), data_path = "/data/lsp_dataset/heat/", frames=str(picid).zfill(4))
     print(heat_path)
     data = scipy.io.loadmat(heat_path)
     heat = data['heat']
@@ -463,7 +518,76 @@ def get_3d_Val_batch(img_path, pose_path):
                         Y_data = np.reshape(Y_data, (1, 42))
                         yield X_data, Y_data
 
+def get_3d_Test_batch(img_path, pose_path):
+    action_s = {2:"Directions", 3:"Discussion", 4:"Eating", 5:"Greeting", 6:"Phoning", 7:"Posing", 8:"Purchases", 9:"Sitting", 10:"SittingDown", 11:"Smoking", 12:"Photo", 13:"Waiting", 14:"Walking", 15:"WalkDog", 16:"WalkTogether"}
+    camera_s = [".54138969", ".55011271", ".58860488", ".60457274"]
+    sub_s = [" 1", " 2", " 3", ""]
+    subject_list = [11]
+    action_list = np.arange(2, 17)
+    subaction_list = np.arange(1, 2)
+    camera_list = np.arange(1, 2)
+    while 1:
+        for subject in subject_list:
+            for action in action_list:
+                for subaction in subaction_list:
+                    for camera in camera_list:
+                        folder_name = 's_{:02d}_act_{:02d}_subact_{:02d}_ca_{:02d}'.format(subject, action, subaction, camera)
+                        path = img_path + folder_name
+                        meta_name = path + '/matlab_meta.mat'
+                        data_start_index = 191
+                        X_data_quene = []
+                        # query path
 
+                        exist_path = [] 
+                        for i in range(0,4):
+                            pose_file_name = "S{subject}/{action}{subindex}{camindex}.cdf.mat".format(subject = subject, action = action_s[action], subindex = sub_s[i], camindex = camera_s[camera-1])
+                            pose_file_path = pose_path + pose_file_name
+                            if os.path.exists(pose_file_path):
+                                exist_path.append(pose_file_path)
+
+
+                        pose_file_path = ""
+
+                        if len(exist_path)!=2:
+                            print(exist_path, folder_name,'ecifficient path!!')
+                            #assert len(exist_path) < 2, folder_name
+                            continue
+                        else:
+                            pose_file_path = exist_path[subaction - 1]
+
+                        if not os.path.exists(pose_file_path):
+                            print(pose_file_path, subaction , 'not exists!')
+
+
+                        pose_data = human36_read_joints(pose_file_path)
+                        pose_data = pose_data[0,0]
+
+                        while data_start_index < 231:
+                            for i in range(0,8):
+                                if len(X_data_quene) == 8:
+                                    X_data_quene.pop(0)
+
+                                data_start_index += 5
+                                img_name = img_path + folder_name + '/' + '{}_{:06d}.jpg'.format(folder_name, data_start_index)
+                                if not os.path.exists(img_name):
+                                    print(pose_file_path, img_name, 'not exists!')
+                                    continue
+                                else: 
+                                    img = cv2.imread(img_name)
+                                    img = img * (2.0 / 255.0) - 1.0
+                                    X_data_quene.append(img)
+
+                        if len(X_data_quene) <8:
+                            continue
+                        X_data = np.array(X_data_quene)
+
+
+                        Y_data = pose_data[data_start_index-1, :]
+                        Y_data = human36_pose_preprocess(Y_data)
+                            
+                        X_data = np.reshape(X_data, (1, 8, 224, 224, 3))
+                        Y_data = np.reshape(Y_data, (1, 42))
+                        yield X_data, Y_data
 
 if __name__ == '__main__':
     #MPI_prerpocessing(True)

@@ -218,7 +218,6 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = 'None'):
     X = Activation('tanh')(X)
 
     X = Conv2D(128, (3, 3), strides = (1, 1), name = 'pred_8s_feature2', padding = 'same', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
-    X = BatchNormalization(axis = 3)(X)
     X = Activation('tanh')(X)
 
     X = Conv2D(128, (5, 5), strides = (2, 2), name = 'pred_8s_p1', padding = 'valid', kernel_initializer = glorot_normal(seed=0), kernel_regularizer = regularizers.l2(0.01))(X)
@@ -288,7 +287,8 @@ def resnet50_8s(input_shape = (224, 224, 3), model_input = 'None'):
 
 def make_seq_model(model_input):
     base_model, _ = resnet50_16s(input_shape=(224, 224, 3))
-    base_model.load_weights(model_input)
+    if model_input != "None":
+        base_model.load_weights(model_input)
     x = base_model.get_layer('pred_16s').output
 
     model = Model(input=base_model.input,output=x)
